@@ -1,0 +1,16 @@
+digraph finite_state_machine {
+	rankdir=LR;
+	node [shape = doublecircle]; initial dirty;
+	node [shape = circle]; fetchingWork executing uploadingResults;
+	initial -> initial [ label = "no_work" ];
+	initial -> executing [ label = "work" ];
+	fetchingWork -> dirty [ label = "no_further_work" ];
+	fetchingWork -> dirty [ label = "error" ];
+	fetchingWork -> executing [ label = "got_work" ];
+	executing -> dirty [ label = "error" ];
+	uploadingResults -> dirty [ label = "error" ];
+	uploadingResults -> dirty [ label = "unsuccessful_results_uploaded" ];
+	uploadingResults -> fetchingWork [ label = "successful_results_uploaded" ];
+	executing -> uploadingResults [ label = "executed" ];
+	
+}
