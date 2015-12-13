@@ -1,0 +1,1318 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Sikuliator Master Node API
+host: localhost
+basePath: /api
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+
+# TODO:
+# - change to new referenceImage and resultImage types
+
+  /projects:
+    get:
+      description: Returns the list of projects.
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ProjectStub"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Adds a new project.
+      parameters:
+      - name: name
+        in: query
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Project"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{projectID}:
+    get:
+      description: Returns the information about the specified project.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Information about the project
+          schema:
+            $ref: "#/definitions/Project"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    patch:
+      description: Updates information about the specified project.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: operations
+        in: body      
+        required: true
+        schema:
+          type: array
+          items: 
+            $ref: "#/definitions/Operation"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Project"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      description: Deletes the specified project.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+
+
+  /projects/{projectID}/referenceImages/{referenceImageID}:
+    get:
+      description: Returns the information about the specified reference Image.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: referenceImageID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Image"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      description: Deletes the specified reference Image.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: referenceImageID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{projectID}/resultImages/{resultImageID}:
+    get:
+      description: Returns the information about the specified result Image.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: resultImageID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Image"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      description: Deletes the specified result Image.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: resultImageID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+
+  /projects/{projectID}/sequences:
+    get:
+      description: Returns a list of all sequences in this project.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/SequenceStub"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Adds a new sequence to this project.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: name
+        in: query
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Sequence"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{projectID}/sequences/{sequenceID}:
+    get:
+      description: Returns the information about the specified sequence.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: sequenceID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Sequence"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    patch:
+      description: Updates the information about the specified sequence.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: sequenceID
+        in: path
+        required: true
+        type: string
+      - name: operations
+        in: body      
+        required: true
+        schema:
+          type: array
+          items: 
+            $ref: "#/definitions/Operation"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Sequence"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      description: Deletes the information about the specified sequence.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: sequenceID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{projectID}/sequences/{sequenceID}/{sequenceVersionID}:
+    get:
+      description: Returns the information about the specified sequence version.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: sequenceID
+        in: path
+        required: true
+        type: string
+      - name: sequenceVersionID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SequenceVersion"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      description: Deletes the specified sequence version.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: sequenceID
+        in: path
+        required: true
+        type: string
+      - name: sequenceVersionID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /projects/{projectID}/tests:
+    get:
+      description: Returns a list of all tests in this project.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/TestStub"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Adds a new test to this project.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: name
+        in: query
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Test"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{projectID}/tests/{testID}:
+    get:
+      description: Returns the information about the specified test.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: testID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Test"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    patch:
+      description: Updates the information about the specified test.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: testID
+        in: path
+        required: true
+        type: string
+      - name: operations
+        in: body      
+        required: true
+        schema:
+          type: array
+          items: 
+            $ref: "#/definitions/Operation"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Test"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      description: Deletes the specified test.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: testID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{projectID}/tests/{testID}/{testVersionID}:
+    get:
+      description: Returns the information about the specified test version.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: testID
+        in: path
+        required: true
+        type: string
+      - name: testVersionID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/TestVersion"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      description: Deletes the specified test version.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: testID
+        in: path
+        required: true
+        type: string
+      - name: testVersionID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /projects/{projectID}/flavors:
+    get:
+      description: Returns a list of all project flavors.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/FlavorStub"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Adds a new project flavors.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: name
+        in: query
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Flavor"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{projectID}/flavors/{flavorID}:
+    get:
+      description: Returns the information about the specified project flavor.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: flavorID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Flavor"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    patch:
+      description: Updates the information about the specified project flavor.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: flavorID
+        in: path
+        required: true
+        type: string
+      - name: operations
+        in: body      
+        required: true
+        schema:
+          type: array
+          items: 
+            $ref: "#/definitions/Operation"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Flavor"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      description: Deletes the specified project flavor.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: flavorID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{projectID}/flavors/{flavorID}/executions:
+    get:
+      description: Returns the list of executions.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: flavorID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ExecutionStub"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{projectID}/flavors/{flavorID}/executions/{runID}:
+    get:
+      description: Returns the information about the specified job execution.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: flavorID
+        in: path
+        required: true
+        type: string
+      - name: runID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Execution"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      description: Deletes the specified job execution.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: flavorID
+        in: path
+        required: true
+        type: string
+      - name: runID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{projectID}/flavors/{flavorID}/executions/{runID}/{testID}/{testVersionID}:
+    get:
+      description: Gets the test result.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: flavorID
+        in: path
+        required: true
+        type: string
+      - name: runID
+        in: path
+        required: true
+        type: string
+      - name: testID
+        in: path
+        required: true
+        type: string
+      - name: testVersionID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Result"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    put:
+      description: Gets the test result.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: flavorID
+        in: path
+        required: true
+        type: string
+      - name: runID
+        in: path
+        required: true
+        type: string
+      - name: testID
+        in: path
+        required: true
+        type: string
+      - name: testVersionID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Result"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /projects/{projectID}/testExecutables:
+    get:
+      description: Returns a list of all test executables for this project.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Executable"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Adds a new test executable to this project.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: name
+        in: query
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Executable"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{projectID}/textExecutables/{executableID}:
+    get:
+      description: Returns the information about the specified test executable.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: executableID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Executable"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      description: Deletes the specified test executable.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: executableID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  # /projects/{projectID}/jobs:
+    # get:
+      # description: Returns a list of all jobs.
+      # parameters:
+      # - name: projectID
+        # in: path
+        # required: true
+        # type: string
+      # responses:
+        # "200":
+          # description: Success
+          # schema:
+            # type: array
+            # items:
+              # $ref: "#/definitions/JobStub"
+        # default:
+          # description: Error
+          # schema:
+            # $ref: "#/definitions/ErrorResponse"
+    # post:
+      # description: Adds a new jobs.
+      # parameters:
+      # - name: projectID
+        # in: path
+        # required: true
+        # type: string
+      # - name: name
+        # in: query
+        # required: true
+        # type: string
+      # responses:
+        # "200":
+          # description: Success
+          # schema:
+            # $ref: "#/definitions/Job"
+        # default:
+          # description: Error
+          # schema:
+            # $ref: "#/definitions/ErrorResponse"
+  # /projects/{projectID}/jobs/{jobID}:
+    # get:
+      # description: Returns the information about the specified job.
+      # parameters:
+      # - name: projectID
+        # in: path
+        # required: true
+        # type: string
+      # - name: jobID
+        # in: path
+        # required: true
+        # type: string
+      # responses:
+        # "200":
+          # description: Success
+          # schema:
+            # $ref: "#/definitions/Job"
+        # default:
+          # description: Error
+          # schema:
+            # $ref: "#/definitions/ErrorResponse"
+    # patch:
+      # description: Updates the information about the specified job.
+      # parameters:
+      # - name: projectID
+        # in: path
+        # required: true
+        # type: string
+      # - name: jobID
+        # in: path
+        # required: true
+        # type: string
+      # - name: operations
+        # in: body      
+        # required: true
+        # schema:
+          # type: array
+          # items: 
+            # $ref: "#/definitions/Operation"
+      # responses:
+        # "200":
+          # description: Success
+          # schema:
+            # $ref: "#/definitions/Job"
+        # default:
+          # description: Error
+          # schema:
+            # $ref: "#/definitions/ErrorResponse"
+    # delete:
+      # description: Deletes the specified job.
+      # parameters:
+      # - name: projectID
+        # in: path
+        # required: true
+        # type: string
+      # - name: jobID
+        # in: path
+        # required: true
+        # type: string
+      # responses:
+        # "200":
+          # description: Success
+        # default:
+          # description: Error
+          # schema:
+            # $ref: "#/definitions/ErrorResponse"
+
+#######
+  /getWork:
+    get:
+      description: Returns work for the client if available.
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Work"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+            
+            
+  /execute:
+    post:
+      description: Starts a new execution.
+      parameters:
+      - name: projectID
+        in: query
+        required: true
+        type: string
+      - name: flavorID
+        in: query
+        required: true
+        type: string
+      - name: testExecutableID
+        in: query
+        required: true
+        type: string
+        
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ExecutionStub"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      
+#######  
+
+definitions:
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+        
+  ProjectStub:
+    description:
+      "A project is identified by its id. 
+      It has a name and is the container for flavors, tests, sequences, jobs, executables and results. 
+      Projects may be tagged."
+    required:
+      - ID
+      - name
+    properties:
+      ID:
+        type: string
+      name:
+        type: string
+        
+        
+  Project:
+    type: object
+    allOf:
+    - $ref: "#/definitions/ProjectStub"
+    - type: object
+      properties:
+        flavors:
+          type: array
+          items: 
+            $ref: "#/definitions/FlavorStub"
+        
+  TestStub:
+    type: object
+    description:
+      "A test is identified by its id. 
+      It has a name and can have many different test versions. 
+      A test can be tagged."
+    required:
+      - ID
+      - name
+    properties:
+      ID:
+        type: string
+      name:
+        type: string
+      tags:
+        type: array
+        items: 
+          type: string
+      
+          
+  Test:
+    type: object
+    allOf:
+    - $ref: "#/definitions/TestStub"
+    - type: object
+      properties:
+        versions:
+          type: array
+          items: 
+            $ref: "#/definitions/TestVersionStub"
+          
+  FlavorStub:
+    description:
+      "A flavor is identified by its id. 
+      It has a name and can be tagged. 
+      It organizes test (versions) in a tree.
+      A flavor can be run with a test executable."
+    required:
+      - ID
+      - name
+    properties:
+      ID:
+        type: string
+      name:
+        type: string
+      tags:
+        type: array
+        items: 
+          type: string
+        
+  TreeNode:
+    type: object
+    properties:
+      type:
+        type: string
+    discriminator: type
+    required:
+    - type
+    
+  TreeCategory:
+    type: object
+    allOf:
+    - $ref: "#/definitions/TreeNode"
+    - type: object
+      properties:
+        entries:
+          type: array
+          items: 
+            $ref: "#/definitions/TreeNode"
+  
+        
+  Flavor:
+    type: object
+    allOf:
+    - $ref: "#/definitions/FlavorStub"
+    - type: object
+      properties:
+        tests:
+          type: array
+          items:
+            $ref: "#/definitions/TreeNode"
+          
+  # JobStub:
+    # required:
+      # - ID
+      # - name
+    # properties:
+      # ID:
+        # type: string
+      # name:
+        # type: string
+      # tags:
+        # type: array
+        # items: 
+          # type: string
+          
+  # Job:
+    # type: object
+    # allOf:
+    # - $ref: "#/definitions/JobStub"
+    # - type: object
+
+  ExecutionStub:
+    required:
+      - ID
+      - name
+      - timeTriggered
+      - executionStatus
+    properties:
+      ID:
+        type: string
+      name:
+        type: string
+      executionStatus:
+        type: string
+      timeTriggered:
+        type: string
+        format: date-time
+      timeFinished:
+        type: string
+        format: date-time
+      executable:
+        $ref: "#/definitions/Executable"
+
+  Execution:
+    type: object
+    allOf:
+    - $ref: "#/definitions/ExecutionStub"
+    - type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/definitions/TreeNode"
+
+  TestVersionStub:
+    type: object
+    allOf:
+    - $ref: "#/definitions/TreeNode"
+    - type: object
+      properties:
+        ID:
+          type: string
+        test:
+          $ref: "#/definitions/TestStub"
+        parentID:
+          description: "Predecessor for this version."
+          type: string
+      required:
+        - ID
+        - test
+          
+  TestVersion:
+    type: object
+    allOf:
+    - $ref: "#/definitions/TestVersionStub"
+    - type: object
+      properties:
+        spec:
+          type: string
+        timeCreated:
+          type: string
+          format: date-time
+      required:
+        - spec
+        - timeCreated
+      
+  SequenceStub:
+    description: 
+      "A sequence is identified by its id. 
+      It has a name and can be tagged. 
+      A sequence can have many versions."
+    required:
+      - ID
+      - name
+    properties:
+      ID:
+        type: string
+      name:
+        type: string
+      tags:
+        type: array
+        items: 
+          type: string
+          
+  Sequence:
+    type: object
+    allOf:
+    - $ref: "#/definitions/SequenceStub"
+    - type: object
+      properties:
+        versions:
+          description:
+            "Ids of all available versions."
+          type: array
+          items: 
+            type: string
+    
+  SequenceVersionStub:
+    description: 
+      "A sequence version is identified by its id. 
+      It contains the encoded sequence."
+    required:
+      - ID
+      - sequence
+      - timeCreated
+    properties:
+      ID:
+        type: string
+      sequence:
+        $ref: "#/definitions/Sequence"
+      timeCreated:
+        type: string
+        format: date-time
+          
+  SequenceVersion:
+    type: object
+    allOf:
+    - $ref: "#/definitions/SequenceVersionStub"
+    - type: object
+      properties:
+        spec:
+          type: string
+        parentID:
+          description: "Predecessor for this version."
+          type: string
+      required:
+        - spec
+        
+  Image:
+    description: 
+      "An image is identified by its id. 
+      It has a name and can be tagged."
+    required:
+      - ID
+      - name
+      - URL
+      - timeCreated
+    properties:
+      ID:
+        type: string
+      name:
+        type: string
+      URL:
+        type: string
+      timeCreated:
+        type: string
+        format: date-time
+      tags:
+        type: array
+        items: 
+          type: string
+        
+  ResultStub:
+    type: object
+    allOf:
+    - $ref: "#/definitions/TreeNode"
+    - type: object
+      required:
+        - ID
+      properties:
+        ID:
+          type: string
+        testResult:
+          type: string
+        test:
+          $ref: "#/definitions/TestVersionStub"
+
+  Executable:
+    description: 
+      "An executable is identified by its id. 
+      It has a name and can be tagged.
+      The URL gives the location in the object storage system."
+    required:
+      - ID
+      - name
+      - URL
+    properties:
+      ID:
+        type: string
+      name:
+        type: string
+      URL:
+        type: string
+      tags:
+        type: array
+        items: 
+          type: string
+          
+  Result:
+    type: object
+    allOf:
+    - $ref: "#/definitions/ResultStub"
+    - type: object
+      properties:
+        duration:
+          description: "Duration in seconds."
+          type: string
+        
+  Work:
+    required:
+      - step
+    properties:
+      step:
+        type: string
+        description: 
+          "A step in the test execution. Encoded as XML."
+          
+  Operation:
+    description: "Based on https://tools.ietf.org/html/rfc6902"
+    properties:
+      action:
+        type: string
+      path:
+        type: string
+      from:
+        type: string
+      value:
+        type: string
+    required:
+    - action
+    - path
+      
