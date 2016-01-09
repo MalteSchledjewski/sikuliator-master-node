@@ -71,11 +71,11 @@ paths:
         required: true
         type: string
       - name: operations
-        in: body      
+        in: body
         required: true
         schema:
           type: array
-          items: 
+          items:
             $ref: "#/definitions/Operation"
       responses:
         "200":
@@ -105,7 +105,7 @@ paths:
 
   /projects/{projectID}/referenceImages/{referenceImageID}:
     get:
-      description: Returns the information about the specified reference Image.
+      description: Returns the information about the specified reference image.
       parameters:
       - name: projectID
         in: path
@@ -124,14 +124,88 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+    patch:
+        description: Updates the information about the reference image.
+        parameters:
+        - name: projectID
+          in: path
+          required: true
+          type: string
+        - name: referenceImageID
+          in: path
+          required: true
+          type: string
+        - name: operations
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Operation"
+        responses:
+          "200":
+            description: Success
+            schema:
+              $ref: "#/definitions/Image"
+          default:
+            description: Error
+            schema:
+              $ref: "#/definitions/ErrorResponse"
     delete:
-      description: Deletes the specified reference Image.
+      description: Deletes the specified reference image.
       parameters:
       - name: projectID
         in: path
         required: true
         type: string
       - name: referenceImageID
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{projectID}/referenceImages/{referenceImageID}/{imageVersion}:
+    get:
+      description: Returns the information about the specified reference image version.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: referenceImageID
+        in: path
+        required: true
+        type: string
+      - name: imageVersion
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ImageVersion"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      description: Deletes the specified reference image version.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: referenceImageID
+        in: path
+        required: true
+        type: string
+      - name: imageVersion
         in: path
         required: true
         type: string
@@ -144,7 +218,7 @@ paths:
             $ref: "#/definitions/ErrorResponse"
   /projects/{projectID}/resultImages/{resultImageID}:
     get:
-      description: Returns the information about the specified result Image.
+      description: Returns the information about the specified result image.
       parameters:
       - name: projectID
         in: path
@@ -163,8 +237,35 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+    patch:
+        description: Updates the information about the result image.
+        parameters:
+        - name: projectID
+          in: path
+          required: true
+          type: string
+        - name: resultImageID
+          in: path
+          required: true
+          type: string
+        - name: operations
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Operation"
+        responses:
+          "200":
+            description: Success
+            schema:
+              $ref: "#/definitions/Image"
+          default:
+            description: Error
+            schema:
+              $ref: "#/definitions/ErrorResponse"
     delete:
-      description: Deletes the specified result Image.
+      description: Deletes the specified result image.
       parameters:
       - name: projectID
         in: path
@@ -181,7 +282,53 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-
+  /projects/{projectID}/resultImages/{resultImageID}/{imageVersion}:
+    get:
+      description: Returns the information about the specified result image version.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: resultImageID
+        in: path
+        required: true
+        type: string
+      - name: imageVersion
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ImageVersion"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      description: Deletes the specified result image version.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: resultImageID
+        in: path
+        required: true
+        type: string
+      - name: imageVersion
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
 
   /projects/{projectID}/sequences:
     get:
@@ -255,11 +402,11 @@ paths:
         required: true
         type: string
       - name: operations
-        in: body      
+        in: body
         required: true
         schema:
           type: array
-          items: 
+          items:
             $ref: "#/definitions/Operation"
       responses:
         "200":
@@ -408,11 +555,11 @@ paths:
         required: true
         type: string
       - name: operations
-        in: body      
+        in: body
         required: true
         schema:
           type: array
-          items: 
+          items:
             $ref: "#/definitions/Operation"
       responses:
         "200":
@@ -489,9 +636,9 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
 
-  /projects/{projectID}/flavors:
+  /projects/{projectID}/Flavours:
     get:
-      description: Returns a list of all project flavors.
+      description: Returns a list of all project Flavours.
       parameters:
       - name: projectID
         in: path
@@ -503,13 +650,13 @@ paths:
           schema:
             type: array
             items:
-              $ref: "#/definitions/FlavorStub"
+              $ref: "#/definitions/FlavourStub"
         default:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
     post:
-      description: Adds a new project flavors.
+      description: Adds a new project Flavours.
       parameters:
       - name: projectID
         in: path
@@ -523,20 +670,20 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: "#/definitions/Flavor"
+            $ref: "#/definitions/Flavour"
         default:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /projects/{projectID}/flavors/{flavorID}:
+  /projects/{projectID}/Flavours/{FlavourID}:
     get:
-      description: Returns the information about the specified project flavor.
+      description: Returns the information about the specified project Flavour.
       parameters:
       - name: projectID
         in: path
         required: true
         type: string
-      - name: flavorID
+      - name: FlavourID
         in: path
         required: true
         type: string
@@ -544,46 +691,46 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: "#/definitions/Flavor"
+            $ref: "#/definitions/Flavour"
         default:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
     patch:
-      description: Updates the information about the specified project flavor.
+      description: Updates the information about the specified project Flavour.
       parameters:
       - name: projectID
         in: path
         required: true
         type: string
-      - name: flavorID
+      - name: FlavourID
         in: path
         required: true
         type: string
       - name: operations
-        in: body      
+        in: body
         required: true
         schema:
           type: array
-          items: 
+          items:
             $ref: "#/definitions/Operation"
       responses:
         "200":
           description: Success
           schema:
-            $ref: "#/definitions/Flavor"
+            $ref: "#/definitions/Flavour"
         default:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
     delete:
-      description: Deletes the specified project flavor.
+      description: Deletes the specified project Flavour.
       parameters:
       - name: projectID
         in: path
         required: true
         type: string
-      - name: flavorID
+      - name: FlavourID
         in: path
         required: true
         type: string
@@ -594,7 +741,7 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /projects/{projectID}/flavors/{flavorID}/executions:
+  /projects/{projectID}/Flavours/{FlavourID}/executions:
     get:
       description: Returns the list of executions.
       parameters:
@@ -602,7 +749,7 @@ paths:
         in: path
         required: true
         type: string
-      - name: flavorID
+      - name: FlavourID
         in: path
         required: true
         type: string
@@ -617,7 +764,7 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /projects/{projectID}/flavors/{flavorID}/executions/{runID}:
+  /projects/{projectID}/Flavours/{FlavourID}/executions/{runID}:
     get:
       description: Returns the information about the specified job execution.
       parameters:
@@ -625,7 +772,7 @@ paths:
         in: path
         required: true
         type: string
-      - name: flavorID
+      - name: FlavourID
         in: path
         required: true
         type: string
@@ -649,7 +796,7 @@ paths:
         in: path
         required: true
         type: string
-      - name: flavorID
+      - name: FlavourID
         in: path
         required: true
         type: string
@@ -664,7 +811,7 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /projects/{projectID}/flavors/{flavorID}/executions/{runID}/{testID}/{testVersionID}:
+  /projects/{projectID}/Flavours/{FlavourID}/executions/{runID}/{testID}/{testVersionID}:
     get:
       description: Gets the test result.
       parameters:
@@ -672,7 +819,7 @@ paths:
         in: path
         required: true
         type: string
-      - name: flavorID
+      - name: FlavourID
         in: path
         required: true
         type: string
@@ -704,7 +851,7 @@ paths:
         in: path
         required: true
         type: string
-      - name: flavorID
+      - name: FlavourID
         in: path
         required: true
         type: string
@@ -881,11 +1028,11 @@ paths:
         # required: true
         # type: string
       # - name: operations
-        # in: body      
+        # in: body
         # required: true
         # schema:
           # type: array
-          # items: 
+          # items:
             # $ref: "#/definitions/Operation"
       # responses:
         # "200":
@@ -928,8 +1075,8 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-            
-            
+
+
   /execute:
     post:
       description: Starts a new execution.
@@ -938,7 +1085,7 @@ paths:
         in: query
         required: true
         type: string
-      - name: flavorID
+      - name: FlavourID
         in: query
         required: true
         type: string
@@ -946,7 +1093,7 @@ paths:
         in: query
         required: true
         type: string
-        
+
       responses:
         "200":
           description: Success
@@ -956,8 +1103,8 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-      
-#######  
+
+#######
 
 definitions:
   ErrorResponse:
@@ -966,12 +1113,12 @@ definitions:
     properties:
       message:
         type: string
-        
+
   ProjectStub:
     description:
-      "A project is identified by its id. 
-      It has a name and is the container for flavors, tests, sequences, jobs, executables and results. 
-      Projects may be tagged."
+      "A project is identified by its id.
+      It has a name and is the container for Flavours, tests, sequences, jobs, executables and results."
+#      Projects may be tagged."
     required:
       - ID
       - name
@@ -980,25 +1127,25 @@ definitions:
         type: string
       name:
         type: string
-        
-        
+
+
   Project:
     type: object
     allOf:
     - $ref: "#/definitions/ProjectStub"
     - type: object
       properties:
-        flavors:
+        Flavours:
           type: array
-          items: 
-            $ref: "#/definitions/FlavorStub"
-        
+          items:
+            $ref: "#/definitions/FlavourStub"
+
   TestStub:
     type: object
     description:
-      "A test is identified by its id. 
-      It has a name and can have many different test versions. 
-      A test can be tagged."
+      "A test is identified by its id.
+      It has a name and can have many different test versions."
+#      A test can be tagged."
     required:
       - ID
       - name
@@ -1007,12 +1154,12 @@ definitions:
         type: string
       name:
         type: string
-      tags:
-        type: array
-        items: 
-          type: string
-      
-          
+#      tags:
+#        type: array
+#        items:
+#          type: string
+
+
   Test:
     type: object
     allOf:
@@ -1021,15 +1168,15 @@ definitions:
       properties:
         versions:
           type: array
-          items: 
+          items:
             $ref: "#/definitions/TestVersionStub"
-          
-  FlavorStub:
+
+  FlavourStub:
     description:
-      "A flavor is identified by its id. 
-      It has a name and can be tagged. 
+      "A Flavour is identified by its id.
+      It has a name.
       It organizes test (versions) in a tree.
-      A flavor can be run with a test executable."
+      A Flavour can be run with a test executable."
     required:
       - ID
       - name
@@ -1038,11 +1185,11 @@ definitions:
         type: string
       name:
         type: string
-      tags:
-        type: array
-        items: 
-          type: string
-        
+#      tags:
+#        type: array
+#        items:
+#          type: string
+
   TreeNode:
     type: object
     properties:
@@ -1051,7 +1198,7 @@ definitions:
     discriminator: type
     required:
     - type
-    
+
   TreeCategory:
     type: object
     allOf:
@@ -1060,21 +1207,21 @@ definitions:
       properties:
         entries:
           type: array
-          items: 
+          items:
             $ref: "#/definitions/TreeNode"
-  
-        
-  Flavor:
+
+
+  Flavour:
     type: object
     allOf:
-    - $ref: "#/definitions/FlavorStub"
+    - $ref: "#/definitions/FlavourStub"
     - type: object
       properties:
         tests:
           type: array
           items:
             $ref: "#/definitions/TreeNode"
-          
+
   # JobStub:
     # required:
       # - ID
@@ -1086,9 +1233,9 @@ definitions:
         # type: string
       # tags:
         # type: array
-        # items: 
+        # items:
           # type: string
-          
+
   # Job:
     # type: object
     # allOf:
@@ -1114,6 +1261,8 @@ definitions:
       timeFinished:
         type: string
         format: date-time
+      flavour:
+        $ref: "#/definitions/FlavourStub"
       executable:
         $ref: "#/definitions/Executable"
 
@@ -1144,7 +1293,7 @@ definitions:
       required:
         - ID
         - test
-          
+
   TestVersion:
     type: object
     allOf:
@@ -1159,11 +1308,11 @@ definitions:
       required:
         - spec
         - timeCreated
-      
+
   SequenceStub:
-    description: 
-      "A sequence is identified by its id. 
-      It has a name and can be tagged. 
+    description:
+      "A sequence is identified by its id.
+      It has a name.
       A sequence can have many versions."
     required:
       - ID
@@ -1173,11 +1322,11 @@ definitions:
         type: string
       name:
         type: string
-      tags:
-        type: array
-        items: 
-          type: string
-          
+#      tags:
+#        type: array
+#        items:
+#          type: string
+
   Sequence:
     type: object
     allOf:
@@ -1188,12 +1337,12 @@ definitions:
           description:
             "Ids of all available versions."
           type: array
-          items: 
+          items:
             type: string
-    
+
   SequenceVersionStub:
-    description: 
-      "A sequence version is identified by its id. 
+    description:
+      "A sequence version is identified by its id.
       It contains the encoded sequence."
     required:
       - ID
@@ -1207,7 +1356,7 @@ definitions:
       timeCreated:
         type: string
         format: date-time
-          
+
   SequenceVersion:
     type: object
     allOf:
@@ -1221,31 +1370,50 @@ definitions:
           type: string
       required:
         - spec
-        
-  Image:
-    description: 
-      "An image is identified by its id. 
-      It has a name and can be tagged."
+
+  ImageVersion:
+    description:
+      "An image version is identified by its id.
+      It has a name."
     required:
       - ID
-      - name
       - URL
       - timeCreated
     properties:
       ID:
-        type: string
-      name:
         type: string
       URL:
         type: string
       timeCreated:
         type: string
         format: date-time
-      tags:
+      image:
+        $ref: "#/definitions/Image"
+
+  Image:
+    description:
+      "An image is identified by its id.
+      It has a name.
+      There can be diferent versions."
+    required:
+      - ID
+      - name
+    properties:
+      ID:
+        type: string
+      name:
+        type: string
+#      tags:
+#        type: array
+#        items:
+#          type: string
+      versions:
+        description:
+          "Ids of all available versions."
         type: array
-        items: 
+        items:
           type: string
-        
+
   ResultStub:
     type: object
     allOf:
@@ -1262,9 +1430,9 @@ definitions:
           $ref: "#/definitions/TestVersionStub"
 
   Executable:
-    description: 
-      "An executable is identified by its id. 
-      It has a name and can be tagged.
+    description:
+      "An executable is identified by its id.
+      It has a name.
       The URL gives the location in the object storage system."
     required:
       - ID
@@ -1277,11 +1445,11 @@ definitions:
         type: string
       URL:
         type: string
-      tags:
-        type: array
-        items: 
-          type: string
-          
+#      tags:
+#        type: array
+#        items:
+#          type: string
+
   Result:
     type: object
     allOf:
@@ -1291,16 +1459,16 @@ definitions:
         duration:
           description: "Duration in seconds."
           type: string
-        
+
   Work:
     required:
       - step
     properties:
       step:
         type: string
-        description: 
+        description:
           "A step in the test execution. Encoded as XML."
-          
+
   Operation:
     description: "Based on https://tools.ietf.org/html/rfc6902"
     properties:
@@ -1315,4 +1483,3 @@ definitions:
     required:
     - action
     - path
-      
