@@ -1,16 +1,21 @@
 digraph finite_state_machine {
 	rankdir=LR;
-	node [shape = doublecircle]; initial dirty;
-	node [shape = circle]; fetchingWork executing uploadingResults;
-	initial -> initial [ label = "no_work" ];
-	initial -> executing [ label = "work" ];
-	fetchingWork -> dirty [ label = "no_further_work" ];
-	fetchingWork -> dirty [ label = "error" ];
-	fetchingWork -> executing [ label = "got_work" ];
-	executing -> dirty [ label = "error" ];
-	uploadingResults -> dirty [ label = "error" ];
-	uploadingResults -> dirty [ label = "unsuccessful_results_uploaded" ];
-	uploadingResults -> fetchingWork [ label = "successful_results_uploaded" ];
-	executing -> uploadingResults [ label = "executed" ];
+	node [shape = doublecircle, fixedsize=true, width=1.7]; 
+	initial dirty error;
+	node [shape = circle, fixedsize=true, width=1.7]; 
+	fetchingWork [label="fetching work"];
+	uploadingResults [label="uploading results"];
+	executing waiting;
+	initial -> waiting [ label = "no_work"];
+	initial -> executing [ label = "work"];
+	waiting -> initial [ label = "wake_up"];
+	fetchingWork -> dirty [ label = "no_further_work"];
+	fetchingWork -> error [ label = "internal_error", style=dotted];
+	fetchingWork -> executing [ label = "got_work"];
+	executing -> error [ label = "internal_error", style=dotted];
+	uploadingResults -> error [ label = "internal_error", style=dotted];
+	uploadingResults -> dirty [ label = "unsuccessful_results_uploaded"];
+	uploadingResults -> fetchingWork [ label = "successful_results_uploaded"];
+	executing -> uploadingResults [ label = "executed"];
 	
 }
