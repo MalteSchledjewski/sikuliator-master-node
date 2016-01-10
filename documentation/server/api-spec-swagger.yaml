@@ -1221,6 +1221,10 @@ definitions:
           type: array
           items:
             $ref: "#/definitions/TreeNode"
+        referenceImageVersions:
+          type: array
+          items:
+            $ref: "#/definitions/ImageVersion"
 
   # JobStub:
     # required:
