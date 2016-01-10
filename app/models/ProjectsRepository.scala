@@ -26,24 +26,11 @@ object ProjectsRepository extends HasDatabaseConfig[JdbcProfile]{
       )
     }
 
-  def getFlavourStubs(projectId : Long): Future[Seq[FlavourStub]] =
-  {
-    val flavours: Future[Seq[Tables.FlavoursRow]] = dbConfig.db.run(Tables.Flavours.filter(_.project === projectId).result)
-    flavours.flatMap( (rows : Seq[Tables.FlavoursRow]) =>
-      Future {
-        rows.toList.map((row: Tables.FlavoursRow) => FlavourStub(row.flavourid, row.name))
-      }
-    )
-  }
-
-
-
   def createProject(projectName: String):Future[ProjectStub] =
   {
       val projectId = dbConfig.db.run((Tables.Projects returning Tables.Projects.map(_.projectid)) += Tables.ProjectsRow(0, projectName))
       projectId.flatMap((projectId) => Future{
-        val id:Long = projectId
-        ProjectStub(id ,projectName)
+        ProjectStub(projectId ,projectName)
       })
   }
 
@@ -56,7 +43,5 @@ object ProjectsRepository extends HasDatabaseConfig[JdbcProfile]{
         })
       }
     )
-
   }
-
 }

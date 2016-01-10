@@ -18,7 +18,7 @@ class Project(projectidC: Long, nameC: String) {
   {
     if (flavours.isEmpty )
       {
-        flavours = Some(Await.result(ProjectsRepository.getFlavourStubs(projectid),Duration(1000, MILLISECONDS)))
+        flavours = Some(Await.result(FlavourRepository.getFlavourStubs(projectid),Duration(1000, MILLISECONDS)))
 //        flavours = Some(ProjectsRepository.getFlavourStubs(projectid).result(Duration(1000, MILLISECONDS)))
       }
 

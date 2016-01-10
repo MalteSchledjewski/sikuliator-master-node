@@ -1,6 +1,6 @@
 package controllers
 
-import models.{Project, ProjectStub, ProjectsRepository, Tables}
+import models._
 import play.api._
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfig}
 import play.api.libs.json.{JsArray, _}
@@ -47,6 +47,7 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
   }
 
 
+
   def getProject(projectId : Long) = Action.async
   {
     implicit request => {
@@ -57,7 +58,23 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
             case Some(t) => Ok (Json.prettyPrint(Json.toJson(t)))
             case None => NotFound
           }
+        }
+      )
+    }
+  }
 
+
+
+  def createFlavour(projectId : Long,flavourName : String) = Action.async
+  {
+    implicit request => {
+      FlavourRepository.createFlavour(projectId, flavourName).flatMap(
+        (stub : Option[FlavourStub]) => Future{
+          stub match
+            {
+            case Some(flavour: FlavourStub) => Ok(Json.prettyPrint(Json.toJson(flavour)))
+            case None => BadRequest
+          }
         }
       )
     }

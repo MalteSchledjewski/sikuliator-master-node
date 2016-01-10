@@ -3,11 +3,11 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
-GET     /projects                   controllers.Application.projects
-POST    /projects                   controllers.Application.createProject(name:String)
+GET     /                                       controllers.Application.index
+GET     /projects                               controllers.Application.projects
+POST    /projects                               controllers.Application.createProject(name:String)
 
-GET     /projects/:projectId                   controllers.Application.getProject(projectId:Long)
-
+GET     /projects/:projectId                    controllers.Application.getProject(projectId:Long)
+POST    /projects/:projectId/Flavours           controllers.Application.createFlavour(projectId: Long,name :String )
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/*file                           controllers.Assets.versioned(path="/public", file: Asset)
