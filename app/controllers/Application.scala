@@ -1,6 +1,6 @@
 package controllers
 
-import models.{ProjectStub, ProjectsRepository, Tables}
+import models.{Project, ProjectStub, ProjectsRepository, Tables}
 import play.api._
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfig}
 import play.api.libs.json.{JsArray, _}
@@ -14,7 +14,7 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
   val dbConfig = DatabaseConfigProvider.get[JdbcProfile](Play.current)
   import driver.api._
 
-  val projectsRepo = new ProjectsRepository()
+//  val projectsRepo = new ProjectsRepository()
 
   def index = Action {
     Ok(views.html.index("Your new application is ready."))
@@ -23,7 +23,7 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
   def projects = Action.async {
     implicit request =>
       {
-        val projectStubs = projectsRepo.getAllProjectStubs
+        val projectStubs = ProjectsRepository.getAllProjectStubs
         projectStubs.flatMap( (stubs : Seq[ProjectStub]) => Future{
           val jsonStubs = stubs.toList.map((stub : ProjectStub) => Json.toJson(stub))
           Ok (Json.prettyPrint(jsonStubs.foldLeft( JsArray()){
@@ -38,13 +38,30 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
   def createProject(projectName : String) = Action.async
   {
     implicit request => {
-      projectsRepo.createProject(projectName).flatMap(
+      ProjectsRepository.createProject(projectName).flatMap(
         (stub : ProjectStub) => Future{
           Ok (Json.prettyPrint(Json.toJson(stub)))
         }
       )
     }
-
   }
+
+
+  def getProject(projectId : Long) = Action.async
+  {
+    implicit request => {
+      ProjectsRepository.getProject(projectId).flatMap(
+        (project : Option[Project]) => Future{
+          project match
+            {
+            case Some(t) => Ok (Json.prettyPrint(Json.toJson(t)))
+            case None => NotFound
+          }
+
+        }
+      )
+    }
+  }
+
 
 }
