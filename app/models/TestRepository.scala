@@ -33,6 +33,21 @@ object TestRepository extends HasDatabaseConfig[JdbcProfile]{
     )
   }
 
+
+  def createTest(projectId : Long,name : String):Future[Option[Long]] =
+  {
+    val insertAction = (Tables.Tests.map(
+      testTable => (testTable.project,testTable.name)
+    ) returning Tables.Tests.map(_.testid)) += (projectId,name)
+    val testId = dbConfig.db.run(insertAction.asTry)
+    testId.map{
+      case Success(id) =>
+        Some(id)
+      case Failure(e) =>
+        None
+    }
+  }
+
   def getTest(projectId : Long, testId : Long): Future[Option[Test]] =
   {
     val testSqlResult: Future[Try[Seq[Tables.TestsRow]]] = dbConfig.db.run(Tables.Tests.filter(test => test.project === projectId && test.testid === testId).result.asTry)

@@ -124,4 +124,70 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
     }
   }
 
+  def createTest(projectId : Long,name : String, spec:String) = Action.async
+  {
+    implicit request => {
+      TestRepository.createTest(projectId, name).flatMap[Result]
+          {
+            case Some(testId: Long) =>
+              TestVersionRepository.createTestVersion(testId,None,spec).flatMap[Result](
+                {
+                  case None => Future{InternalServerError}
+                  case Some(testVersionId) =>
+                    TestRepository.getTest(projectId,testId).map[Result](
+                      {
+                        case None => InternalServerError
+                        case Some(test : Test) =>
+                          Ok (Json.prettyPrint(Json.toJson(test)))
+                      }
+                    )
+                }
+              )
+            case None => Future{BadRequest}
+          }
+        }
+
+
+  }
+
+
+  def createTestVersion(projectId : Long, testId :Long, parent : Option[Long], spec : String) = Action.async
+  {
+    implicit request => {
+      TestVersionRepository.createTestVersion(testId,parent,spec).flatMap[Result](
+        {
+            case Some(testVersionId: Long) =>
+              TestVersionRepository.getTestVersion(testVersionId).map[Result](
+                {
+                  case Some(testVersion : TestVersion) =>
+                    Ok(Json.prettyPrint(Json.toJson(testVersion)))
+                  case None =>
+                    InternalServerError
+                }
+              )
+            case None => Future{BadRequest}
+          }
+      )
+    }
+  }
+
+
+  def getTestVersion(projectId: Long,testId :Long,testVersionId : Long) = Action.async
+  {
+    implicit request => {
+      TestVersionRepository.getTestVersion(testVersionId).flatMap(
+        (testVersion : Option[TestVersion]) => Future{
+          testVersion match
+          {
+            case Some(t) => Ok (Json.prettyPrint(Json.toJson(t)))
+            case None => NotFound
+          }
+        }
+      )
+    }
+  }
+
+  def createNewTestVersion(projectId : Long, testId :Long, parent : Long, spec : String) = createTestVersion(projectId,testId,Some(parent),spec)
+
+
 }

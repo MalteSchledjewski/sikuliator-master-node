@@ -12,7 +12,10 @@ POST    /projects/:projectId/Flavours           controllers.Application.createFl
 
 
 GET     /projects/:projectId/Tests              controllers.Application.listTests(projectId: Long)
+POST    /projects/:projectId/Tests              controllers.Application.createTest(projectId: Long,name:String,spec:String)
 GET     /projects/:projectId/Tests/:testId      controllers.Application.getTest(projectId: Long,testId :Long)
+POST    /projects/:projectId/Tests/:testId      controllers.Application.createNewTestVersion(projectId: Long,testId :Long,parentId : Long,spec : String)
 
+GET     /projects/:projectId/Tests/:testId/:testVersionId      controllers.Application.getTestVersion(projectId: Long,testId :Long,testVersionId: Long)
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                           controllers.Assets.versioned(path="/public", file: Asset)

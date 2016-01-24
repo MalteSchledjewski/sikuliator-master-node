@@ -20,8 +20,8 @@ object TestVersionRepository  extends HasDatabaseConfig[JdbcProfile]{
 
   def getTestVersionStubs(projectId : Long,testId : Long): Future[Option[Seq[TestVersionStub]]] =
   {
-    val flavours: Future[Try[Seq[Tables.TestversionsRow]]] = dbConfig.db.run(Tables.Testversions.filter(_.test === testId).result.asTry)
-    flavours.map[Option[Seq[TestVersionStub]]](
+    val testVersionStubs: Future[Try[Seq[Tables.TestversionsRow]]] = dbConfig.db.run(Tables.Testversions.filter(_.test === testId).result.asTry)
+    testVersionStubs.map[Option[Seq[TestVersionStub]]](
       {
 
         case Success(rows) =>
@@ -32,12 +32,28 @@ object TestVersionRepository  extends HasDatabaseConfig[JdbcProfile]{
     )
   }
 
+
+  def getTestVersion(testVersionId : Long): Future[Option[TestVersion]] =
+  {
+    val testVersionResult: Future[Try[Seq[Tables.TestversionsRow]]] = dbConfig.db.run(Tables.Testversions.filter(_.testversionid === testVersionId).result.asTry)
+    testVersionResult.map[Option[TestVersion]](
+      {
+        case Success(rows) =>
+          rows.headOption.map(
+            (row: Tables.TestversionsRow) => TestVersion(row.testversionid,row.test,row.specification,row.timecreated,row.parent)
+          )
+        case Failure(e) =>
+          None
+      }
+    )
+  }
+
   def createTestVersion(testId :Long, parent : Option[Long], spec : String) : Future[Option[Long]] =
   {
     val insertAction = (Tables.Testversions.map(
-        testVersionTable => (testVersionTable.test,testVersionTable.parent,testVersionTable.specification)
-      )
-      returning Tables.Testversions.map(_.testversionid)) += (testId,parent,spec)
+          testVersionTable => (testVersionTable.test,testVersionTable.parent,testVersionTable.specification)
+        )
+        returning Tables.Testversions.map(_.testversionid)) += (testId,parent,spec)
     dbConfig.db.run(insertAction.asTry).map(
       {
         case Success(result) =>
