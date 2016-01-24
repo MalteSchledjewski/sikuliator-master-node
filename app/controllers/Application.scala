@@ -12,13 +12,7 @@ import scala.concurrent.Future
 
 class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
   val dbConfig = DatabaseConfigProvider.get[JdbcProfile](Play.current)
-  import driver.api._
 
-//  val projectsRepo = new ProjectsRepository()
-
-  def index = Action {
-    Ok(views.html.index("Your new application is ready."))
-  }
 
   def projects = Action.async {
     implicit request =>
@@ -26,10 +20,7 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
         val projectStubs = ProjectsRepository.getAllProjectStubs
         projectStubs.flatMap( (stubs : Seq[ProjectStub]) => Future{
           val jsonStubs = stubs.toList.map((stub : ProjectStub) => Json.toJson(stub))
-          Ok (Json.prettyPrint(jsonStubs.foldLeft( JsArray()){
-            (array : JsArray, stubJSON : JsValue) =>
-                array.append(stubJSON)
-          }))
+          Ok (Json.prettyPrint(JsonHelper.concatAsJsonArray(jsonStubs)))
         })
       }
 
@@ -45,7 +36,6 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
       )
     }
   }
-
 
 
   def getProject(projectId : Long) = Action.async
@@ -65,6 +55,25 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
 
 
 
+  def listFlavours(projectId : Long) = Action.async
+  {
+    implicit request => {
+      FlavourRepository.getFlavourStubs(projectId).flatMap(
+        (stubs : Option[Seq[FlavourStub]]) => Future{
+          stubs match
+          {
+            case Some(flavours: Seq[FlavourStub]) =>
+            {
+              val jsonStubs = flavours.toList.map((stub : FlavourStub) => Json.toJson(stub))
+              Ok (Json.prettyPrint(JsonHelper.concatAsJsonArray(jsonStubs)))
+            }
+            case None => BadRequest
+          }
+        }
+      )
+    }
+  }
+
   def createFlavour(projectId : Long,flavourName : String) = Action.async
   {
     implicit request => {
@@ -80,5 +89,39 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
     }
   }
 
+
+  def listTests(projectId : Long) = Action.async
+  {
+    implicit request => {
+      TestRepository.getTestStubs(projectId).flatMap(
+        (stubs : Option[Seq[TestStub]]) => Future{
+          stubs match
+          {
+            case Some(tests: Seq[TestStub]) =>
+            {
+              val jsonStubs = tests.toList.map((stub : TestStub) => Json.toJson(stub))
+              Ok (Json.prettyPrint(JsonHelper.concatAsJsonArray(jsonStubs)))
+            }
+            case None => BadRequest
+          }
+        }
+      )
+    }
+  }
+
+  def getTest(projectId : Long, testId : Long) = Action.async
+  {
+    implicit request => {
+      TestRepository.getTest(projectId,testId).flatMap(
+        (test : Option[Test]) => Future{
+          test match
+          {
+            case Some(t) => Ok (Json.prettyPrint(Json.toJson(t)))
+            case None => NotFound
+          }
+        }
+      )
+    }
+  }
 
 }

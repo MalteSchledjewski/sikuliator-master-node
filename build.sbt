@@ -22,6 +22,7 @@ libraryDependencies ++= Seq(
 libraryDependencies += "com.github.tminglei" %% "slick-pg" % "0.11.0"
 //libraryDependencies += "com.typesafe.slick" %% "slick-codegen" % "3.1.1"
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
+resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
 // Play provides two styles of routers, one expects its actions to be injected, the
 // other, legacy style, accesses its actions statically.
 routesGenerator := InjectedRoutesGenerator

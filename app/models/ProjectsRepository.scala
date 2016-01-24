@@ -7,7 +7,8 @@ import slick.driver.JdbcProfile
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
 
 /**
   * Created by Malte on 10.01.2016.
@@ -39,7 +40,7 @@ object ProjectsRepository extends HasDatabaseConfig[JdbcProfile]{
     projects.flatMap((rows: Seq[Tables.ProjectsRow]) =>
       Future {
         rows.headOption.map((row: Tables.ProjectsRow) => {
-          new Project(row.projectid, row.name)
+          new Project(row.projectid, row.name,Await.result(FlavourRepository.getFlavourStubs(projectId),Duration(1000, MILLISECONDS)).get)
         })
       }
     )

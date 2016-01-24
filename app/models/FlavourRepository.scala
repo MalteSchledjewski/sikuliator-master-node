@@ -24,12 +24,16 @@ object FlavourRepository extends HasDatabaseConfig[JdbcProfile]{
   import driver.api._
 
 
-  def getFlavourStubs(projectId : Long): Future[Seq[FlavourStub]] =
+  def getFlavourStubs(projectId : Long): Future[Option[Seq[FlavourStub]]] =
   {
-    val flavours: Future[Seq[Tables.FlavoursRow]] = dbConfig.db.run(Tables.Flavours.filter(_.project === projectId).result)
-    flavours.flatMap( (rows : Seq[Tables.FlavoursRow]) =>
-      Future {
-        rows.toList.map((row: Tables.FlavoursRow) => FlavourStub(row.flavourid, row.name))
+    val flavours: Future[Try[Seq[Tables.FlavoursRow]]] = dbConfig.db.run(Tables.Flavours.filter(_.project === projectId).result.asTry)
+    flavours.map[Option[Seq[FlavourStub]]](
+      {
+
+        case Success(rows) =>
+          Some(rows.toList.map((row: Tables.FlavoursRow) => FlavourStub(row.flavourid, row.name)))
+        case Failure(e) =>
+          None
       }
     )
   }

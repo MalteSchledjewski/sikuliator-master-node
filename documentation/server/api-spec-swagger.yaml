@@ -2,7 +2,7 @@ swagger: "2.0"
 info:
   version: "0.0.1"
   title: Sikuliator Master Node API
-host: localhost
+host: localhost:9000
 basePath: /api
 schemes:
   - http
@@ -41,7 +41,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: "#/definitions/Project"
+            $ref: "#/definitions/ProjectStub"
         default:
           description: Error
           schema:
@@ -513,6 +513,10 @@ paths:
         in: query
         required: true
         type: string
+      - name: spec
+        in: query
+        required: true
+        type: string
       responses:
         "200":
           description: Success
@@ -566,6 +570,34 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/Test"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Adds a new test version.
+      parameters:
+      - name: projectID
+        in: path
+        required: true
+        type: string
+      - name: testID
+        in: path
+        required: true
+        type: string
+      - name: spec
+        in: query
+        required: true
+        type: string
+      - name: parent
+        in: query
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/TestVersion"
         default:
           description: Error
           schema:
@@ -670,7 +702,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: "#/definitions/Flavour"
+            $ref: "#/definitions/FlavourStub"
         default:
           description: Error
           schema:
