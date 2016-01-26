@@ -14,9 +14,147 @@ trait Tables {
   import slick.jdbc.{GetResult => GR}
 
   /** DDL for all tables. Call .create to execute. */
-  lazy val schema: profile.SchemaDescription = Array(Flavours.schema, Flavourtesttreeinnernodes.schema, Flavourtesttreeleaves.schema, Projects.schema, Referenceimages.schema, Referenceimageversions.schema, Resultimages.schema, Resultimageversions.schema, Sequences.schema, Sequenceversions.schema, Testexecutables.schema, Testexecutions.schema, Testexecutiontreeinnernodes.schema, Testexecutiontreeleaves.schema, Tests.schema, Testversions.schema).reduceLeft(_ ++ _)
+  lazy val schema: profile.SchemaDescription = Array(Executions.schema, ExecutionToReferenceimage.schema, Executiontoreferenceimageversion.schema, Executiontosequence.schema, Flavours.schema, Flavourtesttreeinnernodes.schema, Flavourtesttreeleaves.schema, Flavourtoreferenceimageversion.schema, Flavourtosequence.schema, Flavourtotestversion.schema, Projects.schema, Referenceimages.schema, Referenceimageversions.schema, Resultimages.schema, Sequences.schema, Sequenceversions.schema, Testexecutables.schema, Testexecutions.schema, Testexecutiontreeinnernodes.schema, Testexecutiontreeleaves.schema, Tests.schema, Testversions.schema).reduceLeft(_ ++ _)
   @deprecated("Use .schema instead of .ddl", "3.0")
   def ddl = schema
+
+  /** Entity class storing rows of table Executions
+   *  @param executionid Database column executionid SqlType(bigserial), AutoInc, PrimaryKey
+   *  @param testversion Database column testversion SqlType(int8)
+   *  @param status Database column status SqlType(text)
+   *  @param result Database column result SqlType(text), Default(None)
+   *  @param starttime Database column starttime SqlType(timestamptz), Default(None)
+   *  @param durationseconds Database column durationseconds SqlType(int4), Default(None) */
+  case class ExecutionsRow(executionid: Long, testversion: Long, status: String, result: Option[String] = None, starttime: Option[java.sql.Timestamp] = None, durationseconds: Option[Int] = None)
+  /** GetResult implicit for fetching ExecutionsRow objects using plain SQL queries */
+  implicit def GetResultExecutionsRow(implicit e0: GR[Long], e1: GR[String], e2: GR[Option[String]], e3: GR[Option[java.sql.Timestamp]], e4: GR[Option[Int]]): GR[ExecutionsRow] = GR{
+    prs => import prs._
+    ExecutionsRow.tupled((<<[Long], <<[Long], <<[String], <<?[String], <<?[java.sql.Timestamp], <<?[Int]))
+  }
+  /** Table description of table executions. Objects of this class serve as prototypes for rows in queries. */
+  class Executions(_tableTag: Tag) extends Table[ExecutionsRow](_tableTag, "executions") {
+    def * = (executionid, testversion, status, result, starttime, durationseconds) <> (ExecutionsRow.tupled, ExecutionsRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(executionid), Rep.Some(testversion), Rep.Some(status), result, starttime, durationseconds).shaped.<>({r=>import r._; _1.map(_=> ExecutionsRow.tupled((_1.get, _2.get, _3.get, _4, _5, _6)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column executionid SqlType(bigserial), AutoInc, PrimaryKey */
+    val executionid: Rep[Long] = column[Long]("executionid", O.AutoInc, O.PrimaryKey)
+    /** Database column testversion SqlType(int8) */
+    val testversion: Rep[Long] = column[Long]("testversion")
+    /** Database column status SqlType(text) */
+    val status: Rep[String] = column[String]("status")
+    /** Database column result SqlType(text), Default(None) */
+    val result: Rep[Option[String]] = column[Option[String]]("result", O.Default(None))
+    /** Database column starttime SqlType(timestamptz), Default(None) */
+    val starttime: Rep[Option[java.sql.Timestamp]] = column[Option[java.sql.Timestamp]]("starttime", O.Default(None))
+    /** Database column durationseconds SqlType(int4), Default(None) */
+    val durationseconds: Rep[Option[Int]] = column[Option[Int]]("durationseconds", O.Default(None))
+  }
+  /** Collection-like TableQuery object for table Executions */
+  lazy val Executions = new TableQuery(tag => new Executions(tag))
+
+  /** Entity class storing rows of table ExecutionToReferenceimage
+   *  @param executionid Database column executionid SqlType(int8)
+   *  @param resultimageid Database column resultimageid SqlType(int8) */
+  case class ExecutionToReferenceimageRow(executionid: Long, resultimageid: Long)
+  /** GetResult implicit for fetching ExecutionToReferenceimageRow objects using plain SQL queries */
+  implicit def GetResultExecutionToReferenceimageRow(implicit e0: GR[Long]): GR[ExecutionToReferenceimageRow] = GR{
+    prs => import prs._
+    ExecutionToReferenceimageRow.tupled((<<[Long], <<[Long]))
+  }
+  /** Table description of table execution_to_referenceimage. Objects of this class serve as prototypes for rows in queries. */
+  class ExecutionToReferenceimage(_tableTag: Tag) extends Table[ExecutionToReferenceimageRow](_tableTag, "execution_to_referenceimage") {
+    def * = (executionid, resultimageid) <> (ExecutionToReferenceimageRow.tupled, ExecutionToReferenceimageRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(executionid), Rep.Some(resultimageid)).shaped.<>({r=>import r._; _1.map(_=> ExecutionToReferenceimageRow.tupled((_1.get, _2.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column executionid SqlType(int8) */
+    val executionid: Rep[Long] = column[Long]("executionid")
+    /** Database column resultimageid SqlType(int8) */
+    val resultimageid: Rep[Long] = column[Long]("resultimageid")
+
+    /** Foreign key referencing Executions (database name execution_to_referenceimage_executions_executionid_fk) */
+    lazy val executionsFk = foreignKey("execution_to_referenceimage_executions_executionid_fk", executionid, Executions)(r => r.executionid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Resultimages (database name execution_to_referenceimage_resultimages_resultimageid_fk) */
+    lazy val resultimagesFk = foreignKey("execution_to_referenceimage_resultimages_resultimageid_fk", resultimageid, Resultimages)(r => r.resultimageid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+
+    /** Uniqueness Index over (resultimageid) (database name execution_to_referenceImage_resultImageID_uindex) */
+    val index1 = index("execution_to_referenceImage_resultImageID_uindex", resultimageid, unique=true)
+  }
+  /** Collection-like TableQuery object for table ExecutionToReferenceimage */
+  lazy val ExecutionToReferenceimage = new TableQuery(tag => new ExecutionToReferenceimage(tag))
+
+  /** Entity class storing rows of table Executiontoreferenceimageversion
+   *  @param executionid Database column executionid SqlType(int8)
+   *  @param referenceimageid Database column referenceimageid SqlType(int8)
+   *  @param referenceimageversionid Database column referenceimageversionid SqlType(int8) */
+  case class ExecutiontoreferenceimageversionRow(executionid: Long, referenceimageid: Long, referenceimageversionid: Long)
+  /** GetResult implicit for fetching ExecutiontoreferenceimageversionRow objects using plain SQL queries */
+  implicit def GetResultExecutiontoreferenceimageversionRow(implicit e0: GR[Long]): GR[ExecutiontoreferenceimageversionRow] = GR{
+    prs => import prs._
+    ExecutiontoreferenceimageversionRow.tupled((<<[Long], <<[Long], <<[Long]))
+  }
+  /** Table description of table executiontoreferenceimageversion. Objects of this class serve as prototypes for rows in queries. */
+  class Executiontoreferenceimageversion(_tableTag: Tag) extends Table[ExecutiontoreferenceimageversionRow](_tableTag, "executiontoreferenceimageversion") {
+    def * = (executionid, referenceimageid, referenceimageversionid) <> (ExecutiontoreferenceimageversionRow.tupled, ExecutiontoreferenceimageversionRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(executionid), Rep.Some(referenceimageid), Rep.Some(referenceimageversionid)).shaped.<>({r=>import r._; _1.map(_=> ExecutiontoreferenceimageversionRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column executionid SqlType(int8) */
+    val executionid: Rep[Long] = column[Long]("executionid")
+    /** Database column referenceimageid SqlType(int8) */
+    val referenceimageid: Rep[Long] = column[Long]("referenceimageid")
+    /** Database column referenceimageversionid SqlType(int8) */
+    val referenceimageversionid: Rep[Long] = column[Long]("referenceimageversionid")
+
+    /** Primary key of Executiontoreferenceimageversion (database name executiontoreferenceimageversion_flavourid_sequenceid_pk) */
+    val pk = primaryKey("executiontoreferenceimageversion_flavourid_sequenceid_pk", (executionid, referenceimageid))
+
+    /** Foreign key referencing Referenceimages (database name executiontoreferenceimageversion_referenceimages_referenceimage) */
+    lazy val referenceimagesFk = foreignKey("executiontoreferenceimageversion_referenceimages_referenceimage", referenceimageid, Referenceimages)(r => r.referenceimageid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Referenceimageversions (database name executiontoreferenceimageversion_referenceimageversions_referen) */
+    lazy val referenceimageversionsFk = foreignKey("executiontoreferenceimageversion_referenceimageversions_referen", referenceimageversionid, Referenceimageversions)(r => r.referenceimageversionid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Testexecutions (database name executiontoreferenceimageversion_executions_flavourid_fk) */
+    lazy val testexecutionsFk = foreignKey("executiontoreferenceimageversion_executions_flavourid_fk", executionid, Testexecutions)(r => r.testexecutionid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+  }
+  /** Collection-like TableQuery object for table Executiontoreferenceimageversion */
+  lazy val Executiontoreferenceimageversion = new TableQuery(tag => new Executiontoreferenceimageversion(tag))
+
+  /** Entity class storing rows of table Executiontosequence
+   *  @param executionid Database column executionid SqlType(int8)
+   *  @param sequenceid Database column sequenceid SqlType(int8)
+   *  @param sequenceversionid Database column sequenceversionid SqlType(int8) */
+  case class ExecutiontosequenceRow(executionid: Long, sequenceid: Long, sequenceversionid: Long)
+  /** GetResult implicit for fetching ExecutiontosequenceRow objects using plain SQL queries */
+  implicit def GetResultExecutiontosequenceRow(implicit e0: GR[Long]): GR[ExecutiontosequenceRow] = GR{
+    prs => import prs._
+    ExecutiontosequenceRow.tupled((<<[Long], <<[Long], <<[Long]))
+  }
+  /** Table description of table executiontosequence. Objects of this class serve as prototypes for rows in queries. */
+  class Executiontosequence(_tableTag: Tag) extends Table[ExecutiontosequenceRow](_tableTag, "executiontosequence") {
+    def * = (executionid, sequenceid, sequenceversionid) <> (ExecutiontosequenceRow.tupled, ExecutiontosequenceRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(executionid), Rep.Some(sequenceid), Rep.Some(sequenceversionid)).shaped.<>({r=>import r._; _1.map(_=> ExecutiontosequenceRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column executionid SqlType(int8) */
+    val executionid: Rep[Long] = column[Long]("executionid")
+    /** Database column sequenceid SqlType(int8) */
+    val sequenceid: Rep[Long] = column[Long]("sequenceid")
+    /** Database column sequenceversionid SqlType(int8) */
+    val sequenceversionid: Rep[Long] = column[Long]("sequenceversionid")
+
+    /** Primary key of Executiontosequence (database name executiontosequence_executionid_sequenceid_pk) */
+    val pk = primaryKey("executiontosequence_executionid_sequenceid_pk", (executionid, sequenceid))
+
+    /** Foreign key referencing Sequences (database name executiontosequence_sequences_sequenceid_fk) */
+    lazy val sequencesFk = foreignKey("executiontosequence_sequences_sequenceid_fk", sequenceid, Sequences)(r => r.sequenceid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Sequenceversions (database name executiontosequence_sequenceversions_sequenceversionid_fk) */
+    lazy val sequenceversionsFk = foreignKey("executiontosequence_sequenceversions_sequenceversionid_fk", sequenceversionid, Sequenceversions)(r => r.sequenceversionid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Testexecutions (database name executiontosequence_executions_flavourid_fk) */
+    lazy val testexecutionsFk = foreignKey("executiontosequence_executions_flavourid_fk", executionid, Testexecutions)(r => r.testexecutionid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+  }
+  /** Collection-like TableQuery object for table Executiontosequence */
+  lazy val Executiontosequence = new TableQuery(tag => new Executiontosequence(tag))
 
   /** Entity class storing rows of table Flavours
    *  @param flavourid Database column flavourid SqlType(bigserial), AutoInc, PrimaryKey
@@ -90,9 +228,9 @@ trait Tables {
 
   /** Entity class storing rows of table Flavourtesttreeleaves
    *  @param nodeid Database column nodeid SqlType(int8)
-   *  @param testversionid Database column testversionid SqlType(int8)
+   *  @param testid Database column testid SqlType(int8)
    *  @param index Database column index SqlType(int8) */
-  case class FlavourtesttreeleavesRow(nodeid: Long, testversionid: Long, index: Long)
+  case class FlavourtesttreeleavesRow(nodeid: Long, testid: Long, index: Long)
   /** GetResult implicit for fetching FlavourtesttreeleavesRow objects using plain SQL queries */
   implicit def GetResultFlavourtesttreeleavesRow(implicit e0: GR[Long]): GR[FlavourtesttreeleavesRow] = GR{
     prs => import prs._
@@ -100,14 +238,14 @@ trait Tables {
   }
   /** Table description of table flavourtesttreeleaves. Objects of this class serve as prototypes for rows in queries. */
   class Flavourtesttreeleaves(_tableTag: Tag) extends Table[FlavourtesttreeleavesRow](_tableTag, "flavourtesttreeleaves") {
-    def * = (nodeid, testversionid, index) <> (FlavourtesttreeleavesRow.tupled, FlavourtesttreeleavesRow.unapply)
+    def * = (nodeid, testid, index) <> (FlavourtesttreeleavesRow.tupled, FlavourtesttreeleavesRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(nodeid), Rep.Some(testversionid), Rep.Some(index)).shaped.<>({r=>import r._; _1.map(_=> FlavourtesttreeleavesRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(nodeid), Rep.Some(testid), Rep.Some(index)).shaped.<>({r=>import r._; _1.map(_=> FlavourtesttreeleavesRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column nodeid SqlType(int8) */
     val nodeid: Rep[Long] = column[Long]("nodeid")
-    /** Database column testversionid SqlType(int8) */
-    val testversionid: Rep[Long] = column[Long]("testversionid")
+    /** Database column testid SqlType(int8) */
+    val testid: Rep[Long] = column[Long]("testid")
     /** Database column index SqlType(int8) */
     val index: Rep[Long] = column[Long]("index")
 
@@ -116,11 +254,119 @@ trait Tables {
 
     /** Foreign key referencing Flavourtesttreeinnernodes (database name flavourtesttreeleaves_flavourtesttreeinnernodes_nodeid_fk) */
     lazy val flavourtesttreeinnernodesFk = foreignKey("flavourtesttreeleaves_flavourtesttreeinnernodes_nodeid_fk", nodeid, Flavourtesttreeinnernodes)(r => r.nodeid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
-    /** Foreign key referencing Testversions (database name flavourtesttreeleaves_testversions_testversionid_fk) */
-    lazy val testversionsFk = foreignKey("flavourtesttreeleaves_testversions_testversionid_fk", testversionid, Testversions)(r => r.testversionid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Tests (database name flavourtesttreeleaves_tests_testid_fk) */
+    lazy val testsFk = foreignKey("flavourtesttreeleaves_tests_testid_fk", testid, Tests)(r => r.testid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
   }
   /** Collection-like TableQuery object for table Flavourtesttreeleaves */
   lazy val Flavourtesttreeleaves = new TableQuery(tag => new Flavourtesttreeleaves(tag))
+
+  /** Entity class storing rows of table Flavourtoreferenceimageversion
+   *  @param flavourid Database column flavourid SqlType(int8)
+   *  @param referenceimageid Database column referenceimageid SqlType(int8)
+   *  @param referenceimageversionid Database column referenceimageversionid SqlType(int8) */
+  case class FlavourtoreferenceimageversionRow(flavourid: Long, referenceimageid: Long, referenceimageversionid: Long)
+  /** GetResult implicit for fetching FlavourtoreferenceimageversionRow objects using plain SQL queries */
+  implicit def GetResultFlavourtoreferenceimageversionRow(implicit e0: GR[Long]): GR[FlavourtoreferenceimageversionRow] = GR{
+    prs => import prs._
+    FlavourtoreferenceimageversionRow.tupled((<<[Long], <<[Long], <<[Long]))
+  }
+  /** Table description of table flavourtoreferenceimageversion. Objects of this class serve as prototypes for rows in queries. */
+  class Flavourtoreferenceimageversion(_tableTag: Tag) extends Table[FlavourtoreferenceimageversionRow](_tableTag, "flavourtoreferenceimageversion") {
+    def * = (flavourid, referenceimageid, referenceimageversionid) <> (FlavourtoreferenceimageversionRow.tupled, FlavourtoreferenceimageversionRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(flavourid), Rep.Some(referenceimageid), Rep.Some(referenceimageversionid)).shaped.<>({r=>import r._; _1.map(_=> FlavourtoreferenceimageversionRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column flavourid SqlType(int8) */
+    val flavourid: Rep[Long] = column[Long]("flavourid")
+    /** Database column referenceimageid SqlType(int8) */
+    val referenceimageid: Rep[Long] = column[Long]("referenceimageid")
+    /** Database column referenceimageversionid SqlType(int8) */
+    val referenceimageversionid: Rep[Long] = column[Long]("referenceimageversionid")
+
+    /** Primary key of Flavourtoreferenceimageversion (database name flavourtoreferenceimageversion_flavourid_sequenceid_pk) */
+    val pk = primaryKey("flavourtoreferenceimageversion_flavourid_sequenceid_pk", (flavourid, referenceimageid))
+
+    /** Foreign key referencing Flavours (database name flavourtoreferenceimageversion_flavours_flavourid_fk) */
+    lazy val flavoursFk = foreignKey("flavourtoreferenceimageversion_flavours_flavourid_fk", flavourid, Flavours)(r => r.flavourid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Referenceimages (database name flavourtoreferenceimageversion_referenceimages_referenceimageid) */
+    lazy val referenceimagesFk = foreignKey("flavourtoreferenceimageversion_referenceimages_referenceimageid", referenceimageid, Referenceimages)(r => r.referenceimageid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Referenceimageversions (database name flavourtoreferenceimageversion_referenceimageversions_reference) */
+    lazy val referenceimageversionsFk = foreignKey("flavourtoreferenceimageversion_referenceimageversions_reference", referenceimageversionid, Referenceimageversions)(r => r.referenceimageversionid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+  }
+  /** Collection-like TableQuery object for table Flavourtoreferenceimageversion */
+  lazy val Flavourtoreferenceimageversion = new TableQuery(tag => new Flavourtoreferenceimageversion(tag))
+
+  /** Entity class storing rows of table Flavourtosequence
+   *  @param flavourid Database column flavourid SqlType(int8)
+   *  @param sequenceid Database column sequenceid SqlType(int8)
+   *  @param sequenceversionid Database column sequenceversionid SqlType(int8) */
+  case class FlavourtosequenceRow(flavourid: Long, sequenceid: Long, sequenceversionid: Long)
+  /** GetResult implicit for fetching FlavourtosequenceRow objects using plain SQL queries */
+  implicit def GetResultFlavourtosequenceRow(implicit e0: GR[Long]): GR[FlavourtosequenceRow] = GR{
+    prs => import prs._
+    FlavourtosequenceRow.tupled((<<[Long], <<[Long], <<[Long]))
+  }
+  /** Table description of table flavourtosequence. Objects of this class serve as prototypes for rows in queries. */
+  class Flavourtosequence(_tableTag: Tag) extends Table[FlavourtosequenceRow](_tableTag, "flavourtosequence") {
+    def * = (flavourid, sequenceid, sequenceversionid) <> (FlavourtosequenceRow.tupled, FlavourtosequenceRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(flavourid), Rep.Some(sequenceid), Rep.Some(sequenceversionid)).shaped.<>({r=>import r._; _1.map(_=> FlavourtosequenceRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column flavourid SqlType(int8) */
+    val flavourid: Rep[Long] = column[Long]("flavourid")
+    /** Database column sequenceid SqlType(int8) */
+    val sequenceid: Rep[Long] = column[Long]("sequenceid")
+    /** Database column sequenceversionid SqlType(int8) */
+    val sequenceversionid: Rep[Long] = column[Long]("sequenceversionid")
+
+    /** Primary key of Flavourtosequence (database name flavourtosequence_flavourid_sequenceid_pk) */
+    val pk = primaryKey("flavourtosequence_flavourid_sequenceid_pk", (flavourid, sequenceid))
+
+    /** Foreign key referencing Flavours (database name flavourtosequence_flavours_flavourid_fk) */
+    lazy val flavoursFk = foreignKey("flavourtosequence_flavours_flavourid_fk", flavourid, Flavours)(r => r.flavourid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Sequences (database name flavourtosequence_sequences_sequenceid_fk) */
+    lazy val sequencesFk = foreignKey("flavourtosequence_sequences_sequenceid_fk", sequenceid, Sequences)(r => r.sequenceid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Sequenceversions (database name flavourtosequence_sequenceversions_sequenceversionid_fk) */
+    lazy val sequenceversionsFk = foreignKey("flavourtosequence_sequenceversions_sequenceversionid_fk", sequenceversionid, Sequenceversions)(r => r.sequenceversionid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+  }
+  /** Collection-like TableQuery object for table Flavourtosequence */
+  lazy val Flavourtosequence = new TableQuery(tag => new Flavourtosequence(tag))
+
+  /** Entity class storing rows of table Flavourtotestversion
+   *  @param flavourid Database column flavourid SqlType(int8)
+   *  @param testid Database column testid SqlType(int8)
+   *  @param testversionid Database column testversionid SqlType(int8) */
+  case class FlavourtotestversionRow(flavourid: Long, testid: Long, testversionid: Long)
+  /** GetResult implicit for fetching FlavourtotestversionRow objects using plain SQL queries */
+  implicit def GetResultFlavourtotestversionRow(implicit e0: GR[Long]): GR[FlavourtotestversionRow] = GR{
+    prs => import prs._
+    FlavourtotestversionRow.tupled((<<[Long], <<[Long], <<[Long]))
+  }
+  /** Table description of table flavourtotestversion. Objects of this class serve as prototypes for rows in queries. */
+  class Flavourtotestversion(_tableTag: Tag) extends Table[FlavourtotestversionRow](_tableTag, "flavourtotestversion") {
+    def * = (flavourid, testid, testversionid) <> (FlavourtotestversionRow.tupled, FlavourtotestversionRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(flavourid), Rep.Some(testid), Rep.Some(testversionid)).shaped.<>({r=>import r._; _1.map(_=> FlavourtotestversionRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column flavourid SqlType(int8) */
+    val flavourid: Rep[Long] = column[Long]("flavourid")
+    /** Database column testid SqlType(int8) */
+    val testid: Rep[Long] = column[Long]("testid")
+    /** Database column testversionid SqlType(int8) */
+    val testversionid: Rep[Long] = column[Long]("testversionid")
+
+    /** Primary key of Flavourtotestversion (database name flavourtotestversion_flavourid_sequenceid_pk) */
+    val pk = primaryKey("flavourtotestversion_flavourid_sequenceid_pk", (flavourid, testid))
+
+    /** Foreign key referencing Flavours (database name flavourtotestversion_flavours_flavourid_fk) */
+    lazy val flavoursFk = foreignKey("flavourtotestversion_flavours_flavourid_fk", flavourid, Flavours)(r => r.flavourid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Tests (database name flavourtotestversion_tests_testid_fk) */
+    lazy val testsFk = foreignKey("flavourtotestversion_tests_testid_fk", testid, Tests)(r => r.testid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Testversions (database name flavourtotestversion_testversions_testversionid_fk) */
+    lazy val testversionsFk = foreignKey("flavourtotestversion_testversions_testversionid_fk", testversionid, Testversions)(r => r.testversionid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+  }
+  /** Collection-like TableQuery object for table Flavourtotestversion */
+  lazy val Flavourtotestversion = new TableQuery(tag => new Flavourtotestversion(tag))
 
   /** Entity class storing rows of table Projects
    *  @param projectid Database column projectid SqlType(bigserial), AutoInc, PrimaryKey
@@ -211,64 +457,29 @@ trait Tables {
 
   /** Entity class storing rows of table Resultimages
    *  @param resultimageid Database column resultimageid SqlType(bigserial), AutoInc, PrimaryKey
-   *  @param project Database column project SqlType(int8)
-   *  @param name Database column name SqlType(text) */
-  case class ResultimagesRow(resultimageid: Long, project: Long, name: String)
+   *  @param name Database column name SqlType(text)
+   *  @param url Database column url SqlType(text) */
+  case class ResultimagesRow(resultimageid: Long, name: String, url: String)
   /** GetResult implicit for fetching ResultimagesRow objects using plain SQL queries */
   implicit def GetResultResultimagesRow(implicit e0: GR[Long], e1: GR[String]): GR[ResultimagesRow] = GR{
     prs => import prs._
-    ResultimagesRow.tupled((<<[Long], <<[Long], <<[String]))
+    ResultimagesRow.tupled((<<[Long], <<[String], <<[String]))
   }
   /** Table description of table resultimages. Objects of this class serve as prototypes for rows in queries. */
   class Resultimages(_tableTag: Tag) extends Table[ResultimagesRow](_tableTag, "resultimages") {
-    def * = (resultimageid, project, name) <> (ResultimagesRow.tupled, ResultimagesRow.unapply)
+    def * = (resultimageid, name, url) <> (ResultimagesRow.tupled, ResultimagesRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(resultimageid), Rep.Some(project), Rep.Some(name)).shaped.<>({r=>import r._; _1.map(_=> ResultimagesRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(resultimageid), Rep.Some(name), Rep.Some(url)).shaped.<>({r=>import r._; _1.map(_=> ResultimagesRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column resultimageid SqlType(bigserial), AutoInc, PrimaryKey */
     val resultimageid: Rep[Long] = column[Long]("resultimageid", O.AutoInc, O.PrimaryKey)
-    /** Database column project SqlType(int8) */
-    val project: Rep[Long] = column[Long]("project")
     /** Database column name SqlType(text) */
     val name: Rep[String] = column[String]("name")
-
-    /** Foreign key referencing Projects (database name resultimages___fkproject) */
-    lazy val projectsFk = foreignKey("resultimages___fkproject", project, Projects)(r => r.projectid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Database column url SqlType(text) */
+    val url: Rep[String] = column[String]("url")
   }
   /** Collection-like TableQuery object for table Resultimages */
   lazy val Resultimages = new TableQuery(tag => new Resultimages(tag))
-
-  /** Entity class storing rows of table Resultimageversions
-   *  @param resultimageversionid Database column resultimageversionid SqlType(bigserial), AutoInc, PrimaryKey
-   *  @param url Database column url SqlType(text)
-   *  @param resultimage Database column resultimage SqlType(int8) */
-  case class ResultimageversionsRow(resultimageversionid: Long, url: String, resultimage: Long)
-  /** GetResult implicit for fetching ResultimageversionsRow objects using plain SQL queries */
-  implicit def GetResultResultimageversionsRow(implicit e0: GR[Long], e1: GR[String]): GR[ResultimageversionsRow] = GR{
-    prs => import prs._
-    ResultimageversionsRow.tupled((<<[Long], <<[String], <<[Long]))
-  }
-  /** Table description of table resultimageversions. Objects of this class serve as prototypes for rows in queries. */
-  class Resultimageversions(_tableTag: Tag) extends Table[ResultimageversionsRow](_tableTag, "resultimageversions") {
-    def * = (resultimageversionid, url, resultimage) <> (ResultimageversionsRow.tupled, ResultimageversionsRow.unapply)
-    /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(resultimageversionid), Rep.Some(url), Rep.Some(resultimage)).shaped.<>({r=>import r._; _1.map(_=> ResultimageversionsRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
-
-    /** Database column resultimageversionid SqlType(bigserial), AutoInc, PrimaryKey */
-    val resultimageversionid: Rep[Long] = column[Long]("resultimageversionid", O.AutoInc, O.PrimaryKey)
-    /** Database column url SqlType(text) */
-    val url: Rep[String] = column[String]("url")
-    /** Database column resultimage SqlType(int8) */
-    val resultimage: Rep[Long] = column[Long]("resultimage")
-
-    /** Foreign key referencing Resultimages (database name resultimageversions___fkresultimage) */
-    lazy val resultimagesFk = foreignKey("resultimageversions___fkresultimage", resultimage, Resultimages)(r => r.resultimageid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
-
-    /** Uniqueness Index over (url) (database name ResultImageVersions_URL_uindex) */
-    val index1 = index("ResultImageVersions_URL_uindex", url, unique=true)
-  }
-  /** Collection-like TableQuery object for table Resultimageversions */
-  lazy val Resultimageversions = new TableQuery(tag => new Resultimageversions(tag))
 
   /** Entity class storing rows of table Sequences
    *  @param sequenceid Database column sequenceid SqlType(bigserial), AutoInc, PrimaryKey
@@ -453,40 +664,34 @@ trait Tables {
 
   /** Entity class storing rows of table Testexecutiontreeleaves
    *  @param nodeid Database column nodeid SqlType(int8)
-   *  @param testversionid Database column testversionid SqlType(int8)
    *  @param index Database column index SqlType(int8)
-   *  @param seconds Database column seconds SqlType(int8), Default(None)
-   *  @param status Database column status SqlType(text) */
-  case class TestexecutiontreeleavesRow(nodeid: Long, testversionid: Long, index: Long, seconds: Option[Long] = None, status: String)
+   *  @param executionid Database column executionid SqlType(int8) */
+  case class TestexecutiontreeleavesRow(nodeid: Long, index: Long, executionid: Long)
   /** GetResult implicit for fetching TestexecutiontreeleavesRow objects using plain SQL queries */
-  implicit def GetResultTestexecutiontreeleavesRow(implicit e0: GR[Long], e1: GR[Option[Long]], e2: GR[String]): GR[TestexecutiontreeleavesRow] = GR{
+  implicit def GetResultTestexecutiontreeleavesRow(implicit e0: GR[Long]): GR[TestexecutiontreeleavesRow] = GR{
     prs => import prs._
-    TestexecutiontreeleavesRow.tupled((<<[Long], <<[Long], <<[Long], <<?[Long], <<[String]))
+    TestexecutiontreeleavesRow.tupled((<<[Long], <<[Long], <<[Long]))
   }
   /** Table description of table testexecutiontreeleaves. Objects of this class serve as prototypes for rows in queries. */
   class Testexecutiontreeleaves(_tableTag: Tag) extends Table[TestexecutiontreeleavesRow](_tableTag, "testexecutiontreeleaves") {
-    def * = (nodeid, testversionid, index, seconds, status) <> (TestexecutiontreeleavesRow.tupled, TestexecutiontreeleavesRow.unapply)
+    def * = (nodeid, index, executionid) <> (TestexecutiontreeleavesRow.tupled, TestexecutiontreeleavesRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(nodeid), Rep.Some(testversionid), Rep.Some(index), seconds, Rep.Some(status)).shaped.<>({r=>import r._; _1.map(_=> TestexecutiontreeleavesRow.tupled((_1.get, _2.get, _3.get, _4, _5.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(nodeid), Rep.Some(index), Rep.Some(executionid)).shaped.<>({r=>import r._; _1.map(_=> TestexecutiontreeleavesRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column nodeid SqlType(int8) */
     val nodeid: Rep[Long] = column[Long]("nodeid")
-    /** Database column testversionid SqlType(int8) */
-    val testversionid: Rep[Long] = column[Long]("testversionid")
     /** Database column index SqlType(int8) */
     val index: Rep[Long] = column[Long]("index")
-    /** Database column seconds SqlType(int8), Default(None) */
-    val seconds: Rep[Option[Long]] = column[Option[Long]]("seconds", O.Default(None))
-    /** Database column status SqlType(text) */
-    val status: Rep[String] = column[String]("status")
+    /** Database column executionid SqlType(int8) */
+    val executionid: Rep[Long] = column[Long]("executionid")
 
     /** Primary key of Testexecutiontreeleaves (database name testexecutiontreeleaves_nodeid_index_pk) */
     val pk = primaryKey("testexecutiontreeleaves_nodeid_index_pk", (nodeid, index))
 
+    /** Foreign key referencing Executions (database name testexecutiontreeleaves_executions_executionid_fk) */
+    lazy val executionsFk = foreignKey("testexecutiontreeleaves_executions_executionid_fk", executionid, Executions)(r => r.executionid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
     /** Foreign key referencing Testexecutiontreeinnernodes (database name testexecutiontreeleaves_flavourtesttreeinnernodes_nodeid_fk) */
     lazy val testexecutiontreeinnernodesFk = foreignKey("testexecutiontreeleaves_flavourtesttreeinnernodes_nodeid_fk", nodeid, Testexecutiontreeinnernodes)(r => r.nodeid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
-    /** Foreign key referencing Testversions (database name testexecutiontreeleaves_testversions_testversionid_fk) */
-    lazy val testversionsFk = foreignKey("testexecutiontreeleaves_testversions_testversionid_fk", testversionid, Testversions)(r => r.testversionid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
   }
   /** Collection-like TableQuery object for table Testexecutiontreeleaves */
   lazy val Testexecutiontreeleaves = new TableQuery(tag => new Testexecutiontreeleaves(tag))
