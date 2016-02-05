@@ -1250,13 +1250,15 @@ definitions:
     - type: object
       properties:
         tests:
-          type: array
-          items:
-            $ref: "#/definitions/TreeNode"
+          $ref: "#/definitions/TreeCategory"
         referenceImageVersions:
           type: array
           items:
             $ref: "#/definitions/ImageVersion"
+        sequenceVersions:
+          type: array
+          items:
+            $ref: "#/definitions/SequenceVersionStub"
 
   # JobStub:
     # required:
