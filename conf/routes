@@ -13,11 +13,11 @@ POST    /projects/:projectId/Flavours           controllers.Application.createFl
 #GET     /projects/:projectId/Flavours/:flavourId/executions
 #GET     /projects/:projectId/Flavours/:flavourId/executions/:runId/:testId/:testVersionId
 
-#GET     /projects/:projectId/Sequences
-#POST    /projects/:projectId/Sequences
-#GET     /projects/:projectId/Sequences/:sequenceId
-#POST    /projects/:projectId/Sequences/:sequenceId
-#GET     /projects/:projectId/Sequences/:sequenceId/:sequenceVersionId
+GET     /projects/:projectId/Sequences                                  controllers.Application.listSequences(projectId: Long)
+POST    /projects/:projectId/Sequences                                  controllers.Application.createSequence(projectId: Long,name:String,spec:String)
+GET     /projects/:projectId/Sequences/:sequenceId                      controllers.Application.getSequence(projectId: Long,sequenceId :Long)
+POST    /projects/:projectId/Sequences/:sequenceId                      controllers.Application.createNewSequenceVersion(projectId: Long,sequenceId :Long,parentId : Long,spec : String)
+GET     /projects/:projectId/Sequences/:sequenceId/:sequenceVersionId   controllers.Application.getSequenceVersion(projectId: Long,sequenceId :Long,sequenceVersionId: Long)
 
 #GET     /projects/:projectId/referenceImages
 #POST    /projects/:projectId/referenceImages
@@ -33,19 +33,19 @@ POST    /projects/:projectId/Flavours           controllers.Application.createFl
 #POST    /projects/:projectId/testExecutables
 #GET     /projects/:projectId/testExecutables/:executableId
 
-GET     /projects/:projectId/Tests              controllers.Application.listTests(projectId: Long)
-POST    /projects/:projectId/Tests              controllers.Application.createTest(projectId: Long,name:String,spec:String)
-GET     /projects/:projectId/Tests/:testId      controllers.Application.getTest(projectId: Long,testId :Long)
-POST    /projects/:projectId/Tests/:testId      controllers.Application.createNewTestVersion(projectId: Long,testId :Long,parentId : Long,spec : String)
-GET     /projects/:projectId/Tests/:testId/:testVersionId      controllers.Application.getTestVersion(projectId: Long,testId :Long,testVersionId: Long)
+GET     /projects/:projectId/Tests                              controllers.Application.listTests(projectId: Long)
+POST    /projects/:projectId/Tests                              controllers.Application.createTest(projectId: Long,name:String,spec:String)
+GET     /projects/:projectId/Tests/:testId                      controllers.Application.getTest(projectId: Long,testId :Long)
+POST    /projects/:projectId/Tests/:testId                      controllers.Application.createNewTestVersion(projectId: Long,testId :Long,parentId : Long,spec : String)
+GET     /projects/:projectId/Tests/:testId/:testVersionId       controllers.Application.getTestVersion(projectId: Long,testId :Long,testVersionId: Long)
 
 #GET     /getWork
 #GET     /execute
 
 # binaries
-#GET     /resultImage/:id
-#GET     /referenceImage/:id
-#GET     /testExecutable/:id
+GET     /resultImage/:id                                        controllers.Application.getBinaryResultImage(id:Long)
+GET     /referenceImage/:id                                     controllers.Application.getBinaryReferenceImage(id:Long)
+GET     /testExecutable/:id                                     controllers.Application.getTestExecutableBinary(id:Long)
 
 
 

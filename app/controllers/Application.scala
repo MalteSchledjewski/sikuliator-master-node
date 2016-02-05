@@ -190,4 +190,156 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
   def createNewTestVersion(projectId : Long, testId :Long, parent : Long, spec : String) = createTestVersion(projectId,testId,Some(parent),spec)
 
 
+
+//-------------------------
+
+
+  def getBinaryResultImage(id : Long) = Action.async
+  {
+    implicit request => {
+      BinaryRepository.getResultImageBinary(id).map[Result](
+        {
+          case Some(x : Array[Byte]) => Ok(x).as("image/png")
+          case None => NotFound
+        }
+
+      )
+    }
+  }
+
+
+
+  def getBinaryReferenceImage(id : Long) = Action.async
+  {
+    implicit request => {
+      BinaryRepository.getReferenceImageBinary(id).map[Result](
+        {
+          case Some(x : Array[Byte]) => Ok(x).as("image/png")
+          case None => NotFound
+        }
+
+      )
+    }
+  }
+
+
+  def getTestExecutableBinary(id : Long) = Action.async
+  {
+    implicit request => {
+      BinaryRepository.getTestExecutableBinary(id).map[Result](
+        {
+          case Some(x : Array[Byte]) => Ok(x).as("application/zip")
+          case None => NotFound
+        }
+
+      )
+    }
+  }
+
+//-------------------------
+
+
+
+  def listSequences(projectId : Long) = Action.async
+  {
+    implicit request => {
+      SequenceRepository.getSequenceStubs(projectId).flatMap(
+        (stubs : Option[Seq[SequenceStub]]) => Future{
+          stubs match
+          {
+            case Some(sequences: Seq[SequenceStub]) =>
+            {
+              val jsonStubs = sequences.toList.map((stub : SequenceStub) => Json.toJson(stub))
+              Ok (Json.prettyPrint(JsonHelper.concatAsJsonArray(jsonStubs)))
+            }
+            case None => BadRequest
+          }
+        }
+      )
+    }
+  }
+
+  def getSequence(projectId : Long, sequenceId : Long) = Action.async
+  {
+    implicit request => {
+      SequenceRepository.getSequence(projectId,sequenceId).flatMap(
+        (sequence : Option[ReusableSequence]) => Future{
+          sequence match
+          {
+            case Some(t) => Ok (Json.prettyPrint(Json.toJson(t)))
+            case None => NotFound
+          }
+        }
+      )
+    }
+  }
+
+  def createSequence(projectId : Long,name : String, spec:String) = Action.async
+  {
+    implicit request => {
+      SequenceRepository.createSequence(projectId, name).flatMap[Result]
+        {
+          case Some(sequenceId: Long) =>
+            SequenceVersionRepository.createSequenceVersion(sequenceId,None,spec).flatMap[Result](
+              {
+                case None => Future{InternalServerError}
+                case Some(testVersionId) =>
+                  SequenceRepository.getSequence(projectId,sequenceId).map[Result](
+                    {
+                      case None => InternalServerError
+                      case Some(sequence : ReusableSequence) =>
+                        Ok (Json.prettyPrint(Json.toJson(sequence)))
+                    }
+                  )
+              }
+            )
+          case None => Future{BadRequest}
+        }
+    }
+
+
+  }
+
+
+  def createSequenceVersion(projectId : Long, sequenceId :Long, parent : Option[Long], spec : String) = Action.async
+  {
+    implicit request => {
+      SequenceVersionRepository.createSequenceVersion(sequenceId,parent,spec).flatMap[Result](
+        {
+          case Some(sequenceVersionId: Long) =>
+            SequenceVersionRepository.getSequenceVersion(sequenceVersionId).map[Result](
+              {
+                case Some(sequenceVersion : SequenceVersion) =>
+                  Ok(Json.prettyPrint(Json.toJson(sequenceVersion)))
+                case None =>
+                  InternalServerError
+              }
+            )
+          case None => Future{BadRequest}
+        }
+      )
+    }
+  }
+
+
+  def getSequenceVersion(projectId: Long, sequenceId :Long, sequenceVersionId : Long) = Action.async
+  {
+    implicit request => {
+      SequenceVersionRepository.getSequenceVersion(sequenceVersionId).flatMap(
+        (sequenceVersion : Option[SequenceVersion]) => Future{
+          sequenceVersion match
+          {
+            case Some(t) => Ok (Json.prettyPrint(Json.toJson(t)))
+            case None => NotFound
+          }
+        }
+      )
+    }
+  }
+
+  def createNewSequenceVersion(projectId : Long, sequenceId :Long, parent : Long, spec : String) = createSequenceVersion(projectId,sequenceId,Some(parent),spec)
+
+
+
+
 }
