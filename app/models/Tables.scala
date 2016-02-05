@@ -14,7 +14,7 @@ trait Tables {
   import slick.jdbc.{GetResult => GR}
 
   /** DDL for all tables. Call .create to execute. */
-  lazy val schema: profile.SchemaDescription = Array(Executions.schema, ExecutionToReferenceimage.schema, Executiontoreferenceimageversion.schema, Executiontosequence.schema, Flavours.schema, Flavourtesttreeinnernodes.schema, Flavourtesttreeleaves.schema, Flavourtoreferenceimageversion.schema, Flavourtosequence.schema, Flavourtotestversion.schema, Projects.schema, Referenceimages.schema, Referenceimageversions.schema, Resultimages.schema, Sequences.schema, Sequenceversions.schema, Testexecutables.schema, Testexecutions.schema, Testexecutiontreeinnernodes.schema, Testexecutiontreeleaves.schema, Tests.schema, Testversions.schema).reduceLeft(_ ++ _)
+  lazy val schema: profile.SchemaDescription = Array(Executions.schema, Executiontoreferenceimageversion.schema, ExecutionToResultimage.schema, Executiontosequence.schema, Flavours.schema, Flavourtesttreeinnernodes.schema, Flavourtesttreeleaves.schema, Flavourtoreferenceimageversion.schema, Flavourtosequence.schema, Flavourtotestversion.schema, Projects.schema, Referenceimages.schema, Referenceimageversions.schema, Resultimages.schema, Sequences.schema, Sequenceversions.schema, StorageReferenceimage.schema, StorageResultimage.schema, StorageTestexecutable.schema, Testexecutables.schema, Testexecutions.schema, Testexecutiontreeinnernodes.schema, Testexecutiontreeleaves.schema, Tests.schema, Testversions.schema).reduceLeft(_ ++ _)
   @deprecated("Use .schema instead of .ddl", "3.0")
   def ddl = schema
 
@@ -53,37 +53,6 @@ trait Tables {
   /** Collection-like TableQuery object for table Executions */
   lazy val Executions = new TableQuery(tag => new Executions(tag))
 
-  /** Entity class storing rows of table ExecutionToReferenceimage
-   *  @param executionid Database column executionid SqlType(int8)
-   *  @param resultimageid Database column resultimageid SqlType(int8) */
-  case class ExecutionToReferenceimageRow(executionid: Long, resultimageid: Long)
-  /** GetResult implicit for fetching ExecutionToReferenceimageRow objects using plain SQL queries */
-  implicit def GetResultExecutionToReferenceimageRow(implicit e0: GR[Long]): GR[ExecutionToReferenceimageRow] = GR{
-    prs => import prs._
-    ExecutionToReferenceimageRow.tupled((<<[Long], <<[Long]))
-  }
-  /** Table description of table execution_to_referenceimage. Objects of this class serve as prototypes for rows in queries. */
-  class ExecutionToReferenceimage(_tableTag: Tag) extends Table[ExecutionToReferenceimageRow](_tableTag, "execution_to_referenceimage") {
-    def * = (executionid, resultimageid) <> (ExecutionToReferenceimageRow.tupled, ExecutionToReferenceimageRow.unapply)
-    /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(executionid), Rep.Some(resultimageid)).shaped.<>({r=>import r._; _1.map(_=> ExecutionToReferenceimageRow.tupled((_1.get, _2.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
-
-    /** Database column executionid SqlType(int8) */
-    val executionid: Rep[Long] = column[Long]("executionid")
-    /** Database column resultimageid SqlType(int8) */
-    val resultimageid: Rep[Long] = column[Long]("resultimageid")
-
-    /** Foreign key referencing Executions (database name execution_to_referenceimage_executions_executionid_fk) */
-    lazy val executionsFk = foreignKey("execution_to_referenceimage_executions_executionid_fk", executionid, Executions)(r => r.executionid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
-    /** Foreign key referencing Resultimages (database name execution_to_referenceimage_resultimages_resultimageid_fk) */
-    lazy val resultimagesFk = foreignKey("execution_to_referenceimage_resultimages_resultimageid_fk", resultimageid, Resultimages)(r => r.resultimageid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
-
-    /** Uniqueness Index over (resultimageid) (database name execution_to_referenceImage_resultImageID_uindex) */
-    val index1 = index("execution_to_referenceImage_resultImageID_uindex", resultimageid, unique=true)
-  }
-  /** Collection-like TableQuery object for table ExecutionToReferenceimage */
-  lazy val ExecutionToReferenceimage = new TableQuery(tag => new ExecutionToReferenceimage(tag))
-
   /** Entity class storing rows of table Executiontoreferenceimageversion
    *  @param executionid Database column executionid SqlType(int8)
    *  @param referenceimageid Database column referenceimageid SqlType(int8)
@@ -119,6 +88,37 @@ trait Tables {
   }
   /** Collection-like TableQuery object for table Executiontoreferenceimageversion */
   lazy val Executiontoreferenceimageversion = new TableQuery(tag => new Executiontoreferenceimageversion(tag))
+
+  /** Entity class storing rows of table ExecutionToResultimage
+   *  @param executionid Database column executionid SqlType(int8)
+   *  @param resultimageid Database column resultimageid SqlType(int8) */
+  case class ExecutionToResultimageRow(executionid: Long, resultimageid: Long)
+  /** GetResult implicit for fetching ExecutionToResultimageRow objects using plain SQL queries */
+  implicit def GetResultExecutionToResultimageRow(implicit e0: GR[Long]): GR[ExecutionToResultimageRow] = GR{
+    prs => import prs._
+    ExecutionToResultimageRow.tupled((<<[Long], <<[Long]))
+  }
+  /** Table description of table execution_to_resultimage. Objects of this class serve as prototypes for rows in queries. */
+  class ExecutionToResultimage(_tableTag: Tag) extends Table[ExecutionToResultimageRow](_tableTag, "execution_to_resultimage") {
+    def * = (executionid, resultimageid) <> (ExecutionToResultimageRow.tupled, ExecutionToResultimageRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(executionid), Rep.Some(resultimageid)).shaped.<>({r=>import r._; _1.map(_=> ExecutionToResultimageRow.tupled((_1.get, _2.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column executionid SqlType(int8) */
+    val executionid: Rep[Long] = column[Long]("executionid")
+    /** Database column resultimageid SqlType(int8) */
+    val resultimageid: Rep[Long] = column[Long]("resultimageid")
+
+    /** Foreign key referencing Executions (database name execution_to_resultimage_executions_executionid_fk) */
+    lazy val executionsFk = foreignKey("execution_to_resultimage_executions_executionid_fk", executionid, Executions)(r => r.executionid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Resultimages (database name execution_to_resultimage_resultimages_resultimageid_fk) */
+    lazy val resultimagesFk = foreignKey("execution_to_resultimage_resultimages_resultimageid_fk", resultimageid, Resultimages)(r => r.resultimageid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+
+    /** Uniqueness Index over (resultimageid) (database name execution_to_resultImage_resultImageID_uindex) */
+    val index1 = index("execution_to_resultImage_resultImageID_uindex", resultimageid, unique=true)
+  }
+  /** Collection-like TableQuery object for table ExecutionToResultimage */
+  lazy val ExecutionToResultimage = new TableQuery(tag => new ExecutionToResultimage(tag))
 
   /** Entity class storing rows of table Executiontosequence
    *  @param executionid Database column executionid SqlType(int8)
@@ -546,6 +546,84 @@ trait Tables {
   }
   /** Collection-like TableQuery object for table Sequenceversions */
   lazy val Sequenceversions = new TableQuery(tag => new Sequenceversions(tag))
+
+  /** Entity class storing rows of table StorageReferenceimage
+   *  @param referenceimageverisonid Database column referenceimageverisonid SqlType(int8), PrimaryKey
+   *  @param binary Database column binary SqlType(bytea) */
+  case class StorageReferenceimageRow(referenceimageverisonid: Long, binary: Array[Byte])
+  /** GetResult implicit for fetching StorageReferenceimageRow objects using plain SQL queries */
+  implicit def GetResultStorageReferenceimageRow(implicit e0: GR[Long], e1: GR[Array[Byte]]): GR[StorageReferenceimageRow] = GR{
+    prs => import prs._
+    StorageReferenceimageRow.tupled((<<[Long], <<[Array[Byte]]))
+  }
+  /** Table description of table storage_referenceimage. Objects of this class serve as prototypes for rows in queries. */
+  class StorageReferenceimage(_tableTag: Tag) extends Table[StorageReferenceimageRow](_tableTag, "storage_referenceimage") {
+    def * = (referenceimageverisonid, binary) <> (StorageReferenceimageRow.tupled, StorageReferenceimageRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(referenceimageverisonid), Rep.Some(binary)).shaped.<>({r=>import r._; _1.map(_=> StorageReferenceimageRow.tupled((_1.get, _2.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column referenceimageverisonid SqlType(int8), PrimaryKey */
+    val referenceimageverisonid: Rep[Long] = column[Long]("referenceimageverisonid", O.PrimaryKey)
+    /** Database column binary SqlType(bytea) */
+    val binary: Rep[Array[Byte]] = column[Array[Byte]]("binary")
+
+    /** Foreign key referencing Referenceimageversions (database name storage_referenceimage_referenceimageversions_referenceimagever) */
+    lazy val referenceimageversionsFk = foreignKey("storage_referenceimage_referenceimageversions_referenceimagever", referenceimageverisonid, Referenceimageversions)(r => r.referenceimageversionid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+  }
+  /** Collection-like TableQuery object for table StorageReferenceimage */
+  lazy val StorageReferenceimage = new TableQuery(tag => new StorageReferenceimage(tag))
+
+  /** Entity class storing rows of table StorageResultimage
+   *  @param resultimageid Database column resultimageid SqlType(int8), PrimaryKey
+   *  @param binary Database column binary SqlType(bytea) */
+  case class StorageResultimageRow(resultimageid: Long, binary: Array[Byte])
+  /** GetResult implicit for fetching StorageResultimageRow objects using plain SQL queries */
+  implicit def GetResultStorageResultimageRow(implicit e0: GR[Long], e1: GR[Array[Byte]]): GR[StorageResultimageRow] = GR{
+    prs => import prs._
+    StorageResultimageRow.tupled((<<[Long], <<[Array[Byte]]))
+  }
+  /** Table description of table storage_resultimage. Objects of this class serve as prototypes for rows in queries. */
+  class StorageResultimage(_tableTag: Tag) extends Table[StorageResultimageRow](_tableTag, "storage_resultimage") {
+    def * = (resultimageid, binary) <> (StorageResultimageRow.tupled, StorageResultimageRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(resultimageid), Rep.Some(binary)).shaped.<>({r=>import r._; _1.map(_=> StorageResultimageRow.tupled((_1.get, _2.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column resultimageid SqlType(int8), PrimaryKey */
+    val resultimageid: Rep[Long] = column[Long]("resultimageid", O.PrimaryKey)
+    /** Database column binary SqlType(bytea) */
+    val binary: Rep[Array[Byte]] = column[Array[Byte]]("binary")
+
+    /** Foreign key referencing Resultimages (database name storage_resultimage_resultimages_resultimageid_fk) */
+    lazy val resultimagesFk = foreignKey("storage_resultimage_resultimages_resultimageid_fk", resultimageid, Resultimages)(r => r.resultimageid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+  }
+  /** Collection-like TableQuery object for table StorageResultimage */
+  lazy val StorageResultimage = new TableQuery(tag => new StorageResultimage(tag))
+
+  /** Entity class storing rows of table StorageTestexecutable
+   *  @param testexecutableid Database column testexecutableid SqlType(int8), PrimaryKey
+   *  @param binary Database column binary SqlType(bytea) */
+  case class StorageTestexecutableRow(testexecutableid: Long, binary: Array[Byte])
+  /** GetResult implicit for fetching StorageTestexecutableRow objects using plain SQL queries */
+  implicit def GetResultStorageTestexecutableRow(implicit e0: GR[Long], e1: GR[Array[Byte]]): GR[StorageTestexecutableRow] = GR{
+    prs => import prs._
+    StorageTestexecutableRow.tupled((<<[Long], <<[Array[Byte]]))
+  }
+  /** Table description of table storage_testexecutable. Objects of this class serve as prototypes for rows in queries. */
+  class StorageTestexecutable(_tableTag: Tag) extends Table[StorageTestexecutableRow](_tableTag, "storage_testexecutable") {
+    def * = (testexecutableid, binary) <> (StorageTestexecutableRow.tupled, StorageTestexecutableRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(testexecutableid), Rep.Some(binary)).shaped.<>({r=>import r._; _1.map(_=> StorageTestexecutableRow.tupled((_1.get, _2.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column testexecutableid SqlType(int8), PrimaryKey */
+    val testexecutableid: Rep[Long] = column[Long]("testexecutableid", O.PrimaryKey)
+    /** Database column binary SqlType(bytea) */
+    val binary: Rep[Array[Byte]] = column[Array[Byte]]("binary")
+
+    /** Foreign key referencing Testexecutables (database name storage_testexecutable_testexecutables_testexecutableid_fk) */
+    lazy val testexecutablesFk = foreignKey("storage_testexecutable_testexecutables_testexecutableid_fk", testexecutableid, Testexecutables)(r => r.testexecutableid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+  }
+  /** Collection-like TableQuery object for table StorageTestexecutable */
+  lazy val StorageTestexecutable = new TableQuery(tag => new StorageTestexecutable(tag))
 
   /** Entity class storing rows of table Testexecutables
    *  @param testexecutableid Database column testexecutableid SqlType(bigserial), AutoInc, PrimaryKey
