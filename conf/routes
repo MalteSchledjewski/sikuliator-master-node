@@ -31,9 +31,9 @@ GET         /projects/:projectId/resultImages                                   
 POST        /projects/:projectId/resultImages                                    controllers.Application.addResultImage(projectId: Long)
 GET         /projects/:projectId/resultImages/:resultImageId                     controllers.Application.getResultImage(projectId :Long, resultImageId :Long)
 
-#GET     /projects/:projectId/testExecutables
-#POST    /projects/:projectId/testExecutables
-#GET     /projects/:projectId/testExecutables/:executableId
+GET     /projects/:projectId/testExecutables                                     controllers.Application.listTestExectuables(projectId :Long)
+POST    /projects/:projectId/testExecutables                                     controllers.Application.addTestExectuable(projectId: Long)
+GET     /projects/:projectId/testExecutables/:testExectuableId                   controllers.Application.getTestExectuable(projectId: Long,testExectuableId :Long)
 
 GET         /projects/:projectId/Tests                                           controllers.Application.listTests(projectId: Long)
 POST        /projects/:projectId/Tests                                           controllers.Application.createTest(projectId: Long,name:String,spec:String)

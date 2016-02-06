@@ -366,7 +366,7 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
   def getResultImage(projectId : Long, resultImageId : Long) = Action.async
   {
     implicit request => {
-      ResultImageRepository.getResultImages(projectId,resultImageId).flatMap(
+      ResultImageRepository.getResultImage(projectId,resultImageId).flatMap(
         (maybeResultImage : Option[ResultImage]) => Future{
           maybeResultImage match
           {
@@ -400,6 +400,65 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
         }
       }
     }
+
+  //-------------------------
+
+
+  def listTestExectuables(projectId : Long) = Action.async
+  {
+    implicit request => {
+      TestExecutableRepository.listTestExecutables(projectId).flatMap(
+        (maybeTestExecutables : Option[Seq[TestExecutable]]) => Future{
+          maybeTestExecutables match
+          {
+            case Some(testExecutables: Seq[TestExecutable]) =>
+            {
+              val jsonStubs = testExecutables.toList.map((testExecutable : TestExecutable) => Json.toJson(testExecutable))
+              Ok (Json.prettyPrint(JsonHelper.concatAsJsonArray(jsonStubs)))
+            }
+            case None => BadRequest
+          }
+        }
+      )
+    }
+  }
+
+  def getTestExectuable(projectId : Long, testExectuableId : Long) = Action.async
+  {
+    implicit request => {
+      TestExecutableRepository.getTestExecutable(projectId,testExectuableId).flatMap(
+        (maybeTestExecutable : Option[TestExecutable]) => Future{
+          maybeTestExecutable match
+          {
+            case Some(t) => Ok (Json.prettyPrint(Json.toJson(t)))
+            case None => NotFound
+          }
+        }
+      )
+    }
+  }
+
+  def addTestExectuable(projectId : Long) = Action.async(parse.multipartFormData)
+  {
+    implicit request => {
+      request.body.file("testExecutable") match {
+        case None => Future{BadRequest("no executable")}
+        case Some(file) =>
+          val f :Files.TemporaryFile  = file.ref
+          request.body.asFormUrlEncoded.find(entry => entry._1 == "name").map(entry => entry._2.head) match
+          {
+            case None => Future{BadRequest("no name")}
+            case Some(name:String) =>
+              TestExecutableRepository.addTestExecutables(projectId,name,f).map(
+                {
+                  case Some(t) => Ok (Json.prettyPrint(Json.toJson(t)))
+                  case None => InternalServerError
+                }
+              )
+          }
+      }
+    }
+  }
 
   //-------------------------
 

@@ -34,7 +34,7 @@ object ResultImageRepository extends HasDatabaseConfig[JdbcProfile]{
     )
   }
 
-  def getResultImages(projectId:Long, resultImageId:Long) : Future[Option[ResultImage]] =
+  def getResultImage(projectId:Long, resultImageId:Long) : Future[Option[ResultImage]] =
   {
     val sequences: Future[Try[Seq[Tables.ResultimagesRow]]] = dbConfig.db.run(Tables.Resultimages.filter(resultImage => resultImage.project === projectId && resultImage.resultimageid === resultImageId).result.asTry)
     sequences.map[Option[ResultImage]](

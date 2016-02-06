@@ -646,18 +646,19 @@ trait Tables {
    *  @param testexecutableid Database column testexecutableid SqlType(bigserial), AutoInc, PrimaryKey
    *  @param name Database column name SqlType(text)
    *  @param url Database column url SqlType(text)
-   *  @param project Database column project SqlType(int8) */
-  case class TestexecutablesRow(testexecutableid: Long, name: String, url: String, project: Long)
+   *  @param project Database column project SqlType(int8)
+   *  @param timecreated Database column timecreated SqlType(timestamptz) */
+  case class TestexecutablesRow(testexecutableid: Long, name: String, url: String, project: Long, timecreated: java.sql.Timestamp)
   /** GetResult implicit for fetching TestexecutablesRow objects using plain SQL queries */
-  implicit def GetResultTestexecutablesRow(implicit e0: GR[Long], e1: GR[String]): GR[TestexecutablesRow] = GR{
+  implicit def GetResultTestexecutablesRow(implicit e0: GR[Long], e1: GR[String], e2: GR[java.sql.Timestamp]): GR[TestexecutablesRow] = GR{
     prs => import prs._
-    TestexecutablesRow.tupled((<<[Long], <<[String], <<[String], <<[Long]))
+    TestexecutablesRow.tupled((<<[Long], <<[String], <<[String], <<[Long], <<[java.sql.Timestamp]))
   }
   /** Table description of table testexecutables. Objects of this class serve as prototypes for rows in queries. */
   class Testexecutables(_tableTag: Tag) extends Table[TestexecutablesRow](_tableTag, "testexecutables") {
-    def * = (testexecutableid, name, url, project) <> (TestexecutablesRow.tupled, TestexecutablesRow.unapply)
+    def * = (testexecutableid, name, url, project, timecreated) <> (TestexecutablesRow.tupled, TestexecutablesRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(testexecutableid), Rep.Some(name), Rep.Some(url), Rep.Some(project)).shaped.<>({r=>import r._; _1.map(_=> TestexecutablesRow.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(testexecutableid), Rep.Some(name), Rep.Some(url), Rep.Some(project), Rep.Some(timecreated)).shaped.<>({r=>import r._; _1.map(_=> TestexecutablesRow.tupled((_1.get, _2.get, _3.get, _4.get, _5.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column testexecutableid SqlType(bigserial), AutoInc, PrimaryKey */
     val testexecutableid: Rep[Long] = column[Long]("testexecutableid", O.AutoInc, O.PrimaryKey)
@@ -667,6 +668,8 @@ trait Tables {
     val url: Rep[String] = column[String]("url")
     /** Database column project SqlType(int8) */
     val project: Rep[Long] = column[Long]("project")
+    /** Database column timecreated SqlType(timestamptz) */
+    val timecreated: Rep[java.sql.Timestamp] = column[java.sql.Timestamp]("timecreated")
 
     /** Foreign key referencing Projects (database name testexecutables___fkproject) */
     lazy val projectsFk = foreignKey("testexecutables___fkproject", project, Projects)(r => r.projectid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)

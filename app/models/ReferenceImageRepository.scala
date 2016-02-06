@@ -80,10 +80,10 @@ object ReferenceImageRepository extends HasDatabaseConfig[JdbcProfile]{
 
         referenceImageVersionId <- Tables.Referenceimageversions.map(
           referenceimageversions => (referenceimageversions.referenceimage, referenceimageversions.parent, referenceimageversions.url)
-        ).returning(Tables.Referenceimageversions.map(_.referenceimageversionid)) += (referenceImageId,None,"/resultImage/")
+        ).returning(Tables.Referenceimageversions.map(_.referenceimageversionid)) += (referenceImageId,None,"/referenceImage/")
         _ <- Tables.StorageReferenceimage += Tables.StorageReferenceimageRow(referenceImageVersionId, content)
         tmp <- Tables.Referenceimageversions.filter(_.referenceimageversionid === referenceImageVersionId).result.map(_.head)
-        _ <- Tables.Referenceimageversions.insertOrUpdate(Tables.ReferenceimageversionsRow(tmp.referenceimageversionid,"/resultImage/"+referenceImageVersionId,tmp.referenceimage,tmp.timecreated,tmp.parent))
+        _ <- Tables.Referenceimageversions.insertOrUpdate(Tables.ReferenceimageversionsRow(tmp.referenceimageversionid,"/referenceImage/"+referenceImageVersionId,tmp.referenceimage,tmp.timecreated,tmp.parent))
         versionRow <- Tables.Referenceimageversions.filter(_.referenceimageversionid === referenceImageVersionId).result.map(_.head)
         row <- Tables.Referenceimages.filter(_.referenceimageid === referenceImageId).result.map(_.head)
       } yield (row,versionRow)
