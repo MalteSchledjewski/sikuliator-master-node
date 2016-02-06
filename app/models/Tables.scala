@@ -426,18 +426,19 @@ trait Tables {
   /** Entity class storing rows of table Referenceimageversions
    *  @param referenceimageversionid Database column referenceimageversionid SqlType(bigserial), AutoInc, PrimaryKey
    *  @param url Database column url SqlType(text)
-   *  @param referenceimage Database column referenceimage SqlType(int8) */
-  case class ReferenceimageversionsRow(referenceimageversionid: Long, url: String, referenceimage: Long)
+   *  @param referenceimage Database column referenceimage SqlType(int8)
+   *  @param timecreated Database column timecreated SqlType(timestamptz) */
+  case class ReferenceimageversionsRow(referenceimageversionid: Long, url: String, referenceimage: Long, timecreated: java.sql.Timestamp)
   /** GetResult implicit for fetching ReferenceimageversionsRow objects using plain SQL queries */
-  implicit def GetResultReferenceimageversionsRow(implicit e0: GR[Long], e1: GR[String]): GR[ReferenceimageversionsRow] = GR{
+  implicit def GetResultReferenceimageversionsRow(implicit e0: GR[Long], e1: GR[String], e2: GR[java.sql.Timestamp]): GR[ReferenceimageversionsRow] = GR{
     prs => import prs._
-    ReferenceimageversionsRow.tupled((<<[Long], <<[String], <<[Long]))
+    ReferenceimageversionsRow.tupled((<<[Long], <<[String], <<[Long], <<[java.sql.Timestamp]))
   }
   /** Table description of table referenceimageversions. Objects of this class serve as prototypes for rows in queries. */
   class Referenceimageversions(_tableTag: Tag) extends Table[ReferenceimageversionsRow](_tableTag, "referenceimageversions") {
-    def * = (referenceimageversionid, url, referenceimage) <> (ReferenceimageversionsRow.tupled, ReferenceimageversionsRow.unapply)
+    def * = (referenceimageversionid, url, referenceimage, timecreated) <> (ReferenceimageversionsRow.tupled, ReferenceimageversionsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(referenceimageversionid), Rep.Some(url), Rep.Some(referenceimage)).shaped.<>({r=>import r._; _1.map(_=> ReferenceimageversionsRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(referenceimageversionid), Rep.Some(url), Rep.Some(referenceimage), Rep.Some(timecreated)).shaped.<>({r=>import r._; _1.map(_=> ReferenceimageversionsRow.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column referenceimageversionid SqlType(bigserial), AutoInc, PrimaryKey */
     val referenceimageversionid: Rep[Long] = column[Long]("referenceimageversionid", O.AutoInc, O.PrimaryKey)
@@ -445,6 +446,8 @@ trait Tables {
     val url: Rep[String] = column[String]("url")
     /** Database column referenceimage SqlType(int8) */
     val referenceimage: Rep[Long] = column[Long]("referenceimage")
+    /** Database column timecreated SqlType(timestamptz) */
+    val timecreated: Rep[java.sql.Timestamp] = column[java.sql.Timestamp]("timecreated")
 
     /** Foreign key referencing Referenceimages (database name referenceimageversions___fkreferenceimage) */
     lazy val referenceimagesFk = foreignKey("referenceimageversions___fkreferenceimage", referenceimage, Referenceimages)(r => r.referenceimageid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
@@ -458,18 +461,20 @@ trait Tables {
   /** Entity class storing rows of table Resultimages
    *  @param resultimageid Database column resultimageid SqlType(bigserial), AutoInc, PrimaryKey
    *  @param name Database column name SqlType(text)
-   *  @param url Database column url SqlType(text) */
-  case class ResultimagesRow(resultimageid: Long, name: String, url: String)
+   *  @param url Database column url SqlType(text)
+   *  @param project Database column project SqlType(int8)
+   *  @param timecreated Database column timecreated SqlType(timestamptz) */
+  case class ResultimagesRow(resultimageid: Long, name: String, url: String, project: Long, timecreated: java.sql.Timestamp)
   /** GetResult implicit for fetching ResultimagesRow objects using plain SQL queries */
-  implicit def GetResultResultimagesRow(implicit e0: GR[Long], e1: GR[String]): GR[ResultimagesRow] = GR{
+  implicit def GetResultResultimagesRow(implicit e0: GR[Long], e1: GR[String], e2: GR[java.sql.Timestamp]): GR[ResultimagesRow] = GR{
     prs => import prs._
-    ResultimagesRow.tupled((<<[Long], <<[String], <<[String]))
+    ResultimagesRow.tupled((<<[Long], <<[String], <<[String], <<[Long], <<[java.sql.Timestamp]))
   }
   /** Table description of table resultimages. Objects of this class serve as prototypes for rows in queries. */
   class Resultimages(_tableTag: Tag) extends Table[ResultimagesRow](_tableTag, "resultimages") {
-    def * = (resultimageid, name, url) <> (ResultimagesRow.tupled, ResultimagesRow.unapply)
+    def * = (resultimageid, name, url, project, timecreated) <> (ResultimagesRow.tupled, ResultimagesRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(resultimageid), Rep.Some(name), Rep.Some(url)).shaped.<>({r=>import r._; _1.map(_=> ResultimagesRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(resultimageid), Rep.Some(name), Rep.Some(url), Rep.Some(project), Rep.Some(timecreated)).shaped.<>({r=>import r._; _1.map(_=> ResultimagesRow.tupled((_1.get, _2.get, _3.get, _4.get, _5.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column resultimageid SqlType(bigserial), AutoInc, PrimaryKey */
     val resultimageid: Rep[Long] = column[Long]("resultimageid", O.AutoInc, O.PrimaryKey)
@@ -477,6 +482,13 @@ trait Tables {
     val name: Rep[String] = column[String]("name")
     /** Database column url SqlType(text) */
     val url: Rep[String] = column[String]("url")
+    /** Database column project SqlType(int8) */
+    val project: Rep[Long] = column[Long]("project")
+    /** Database column timecreated SqlType(timestamptz) */
+    val timecreated: Rep[java.sql.Timestamp] = column[java.sql.Timestamp]("timecreated")
+
+    /** Foreign key referencing Projects (database name resultimages___fkproject) */
+    lazy val projectsFk = foreignKey("resultimages___fkproject", project, Projects)(r => r.projectid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
   }
   /** Collection-like TableQuery object for table Resultimages */
   lazy val Resultimages = new TableQuery(tag => new Resultimages(tag))

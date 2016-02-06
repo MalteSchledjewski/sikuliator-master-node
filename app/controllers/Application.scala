@@ -3,6 +3,7 @@ package controllers
 import models._
 import play.api._
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfig}
+import play.api.libs.Files
 import play.api.libs.json.{JsArray, _}
 import play.api.mvc.{Action, Controller, Result}
 import slick.driver.JdbcProfile
@@ -339,6 +340,72 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
 
   def createNewSequenceVersion(projectId : Long, sequenceId :Long, parent : Long, spec : String) = createSequenceVersion(projectId,sequenceId,Some(parent),spec)
 
+
+//-------------------------
+
+
+  def listResultImages(projectId : Long) = Action.async
+  {
+    implicit request => {
+      ResultImageRepository.listResultImages(projectId).flatMap(
+        (stubs : Option[Seq[ResultImage]]) => Future{
+          stubs match
+          {
+            case Some(resultImages: Seq[ResultImage]) =>
+            {
+              val jsonStubs = resultImages.toList.map((stub : ResultImage) => Json.toJson(stub))
+              Ok (Json.prettyPrint(JsonHelper.concatAsJsonArray(jsonStubs)))
+            }
+            case None => BadRequest
+          }
+        }
+      )
+    }
+  }
+
+
+  def getResultImage(projectId : Long, resultImageId : Long) = Action.async
+  {
+    implicit request => {
+      ResultImageRepository.getResultImages(projectId,resultImageId).flatMap(
+        (maybeResultImage : Option[ResultImage]) => Future{
+          maybeResultImage match
+          {
+            case Some(t) => Ok (Json.prettyPrint(Json.toJson(t)))
+            case None => NotFound
+          }
+        }
+      )
+    }
+  }
+
+  def addResultImage(projectId : Long) = Action.async(parse.multipartFormData)
+  {
+    implicit request => {
+//      Future{
+
+        request.body.file("resultImage") match {
+          case None => Future{BadRequest("no image")}
+          case Some(file) =>
+
+            val f :Files.TemporaryFile  = file.ref
+            request.body.asFormUrlEncoded.find(entry => entry._1 == "name").map(entry => entry._2.head) match
+              {
+              case None => Future{BadRequest("no name")}
+              case Some(name:String) =>
+                ResultImageRepository.addResultImages(projectId,name,f).map(
+                  {
+                    case Some(t) => Ok (Json.prettyPrint(Json.toJson(t)))
+                    case None => InternalServerError
+                  }
+                )
+            }
+        }
+      }
+
+
+    }
+//  }
 
 
 
