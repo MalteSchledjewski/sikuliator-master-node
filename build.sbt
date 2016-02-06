@@ -40,7 +40,7 @@ routesGenerator := InjectedRoutesGenerator
 //  val url = "jdbc:postgresql://localhost:5432/Sikuliator"
 //  val jdbcDriver = "org.postgresql.Driver"
 //  val slickDriver = "slick.driver.PostgresDriver"
-//  val pkg = "com.example.models"
+//  val pkg = "models"
 //  toError(r.run("slick.codegen.SourceCodeGenerator", cp.files, Seq(slickDriver, jdbcDriver, url, outputDir, pkg, username, password), s.log))
 //  val fname = outputDir  + "/Tables.scala"
 //  Seq(file(fname))

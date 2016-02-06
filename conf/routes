@@ -8,6 +8,7 @@ POST        /projects                                                           
 GET         /projects/:projectId                                                 controllers.Application.getProject(projectId:Long)
 
 GET         /projects/:projectId/Flavours                                        controllers.Application.listFlavours(projectId: Long)
+# Add the tree and the version management to it:
 POST        /projects/:projectId/Flavours                                        controllers.Application.createFlavour(projectId: Long,name :String )
 #GET     /projects/:projectId/Flavours/:flavourId
 #GET     /projects/:projectId/Flavours/:flavourId/executions
@@ -19,15 +20,15 @@ GET         /projects/:projectId/Sequences/:sequenceId                          
 POST        /projects/:projectId/Sequences/:sequenceId                           controllers.Application.createNewSequenceVersion(projectId: Long,sequenceId :Long,parentId : Long,spec : String)
 GET         /projects/:projectId/Sequences/:sequenceId/:sequenceVersionId        controllers.Application.getSequenceVersion(projectId: Long,sequenceId :Long,sequenceVersionId: Long)
 
-#GET     /projects/:projectId/referenceImages
-#POST    /projects/:projectId/referenceImages
-#GET     /projects/:projectId/referenceImages/:referenceImageId
-#POST    /projects/:projectId/referenceImages/:referenceImageId
-#GET     /projects/:projectId/referenceImages/:referenceImageId/:referenceImageVersionId
+GET     /projects/:projectId/referenceImages                                                controllers.Application.listReferenceImages(projectId :Long)
+POST    /projects/:projectId/referenceImages                                                controllers.Application.createReferenceImage(projectId :Long)
+GET     /projects/:projectId/referenceImages/:referenceImageId                              controllers.Application.getReferenceImage(projectId:Long,referenceImageId:Long)
+POST    /projects/:projectId/referenceImages/:referenceImageId                              controllers.Application.createNewReferenceImageVersion(projectId:Long,referenceImageId :Long, parent:Long)
+GET     /projects/:projectId/referenceImages/:referenceImageId/:referenceImageVersionId     controllers.Application.getReferenceImageVersion(projectId :Long, referenceImageId :Long, referenceImageVersionId :Long)
 
 
 GET         /projects/:projectId/resultImages                                    controllers.Application.listResultImages(projectId :Long)
-POST    /projects/:projectId/resultImages                                        controllers.Application.addResultImage(projectId: Long)
+POST        /projects/:projectId/resultImages                                    controllers.Application.addResultImage(projectId: Long)
 GET         /projects/:projectId/resultImages/:resultImageId                     controllers.Application.getResultImage(projectId :Long, resultImageId :Long)
 
 #GET     /projects/:projectId/testExecutables

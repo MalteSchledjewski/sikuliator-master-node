@@ -363,7 +363,6 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
     }
   }
 
-
   def getResultImage(projectId : Long, resultImageId : Long) = Action.async
   {
     implicit request => {
@@ -382,8 +381,6 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
   def addResultImage(projectId : Long) = Action.async(parse.multipartFormData)
   {
     implicit request => {
-//      Future{
-
         request.body.file("resultImage") match {
           case None => Future{BadRequest("no image")}
           case Some(file) =>
@@ -402,10 +399,116 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
             }
         }
       }
-
-
     }
-//  }
+
+  //-------------------------
+
+
+  def listReferenceImages(projectId : Long) = Action.async
+  {
+    implicit request => {
+      ReferenceImageRepository.listReferenceImages(projectId).flatMap(
+        (stubs : Option[Seq[ReferenceImageStub]]) => Future{
+          stubs match
+          {
+            case Some(referenceImageStubs: Seq[ReferenceImageStub]) =>
+            {
+              val jsonStubs = referenceImageStubs.toList.map((stub : ReferenceImageStub) => Json.toJson(stub))
+              Ok (Json.prettyPrint(JsonHelper.concatAsJsonArray(jsonStubs)))
+            }
+            case None => BadRequest
+          }
+        }
+      )
+    }
+  }
+
+  def getReferenceImage(projectId : Long, referenceImageId : Long) = Action.async
+  {
+    implicit request => {
+      ReferenceImageRepository.getReferenceImage(projectId,referenceImageId).flatMap(
+        (test : Option[ReferenceImage]) => Future{
+          test match
+          {
+            case Some(t) => Ok (Json.prettyPrint(Json.toJson(t)))
+            case None => NotFound
+          }
+        }
+      )
+    }
+  }
+
+  def createReferenceImage(projectId : Long) = Action.async(parse.multipartFormData)
+  {
+    implicit request => {
+      request.body.file("referenceImage") match {
+        case None => Future{BadRequest("no image")}
+        case Some(file) =>
+
+          val f :Files.TemporaryFile  = file.ref
+          request.body.asFormUrlEncoded.find(entry => entry._1 == "name").map(entry => entry._2.head) match
+          {
+            case None => Future{BadRequest("no name")}
+            case Some(name:String) =>
+              ReferenceImageRepository.createReferenceImage(projectId, name,f).map[Result]
+                {
+                  case Some(referenceImage: ReferenceImage) =>
+                    Ok (Json.prettyPrint(Json.toJson(referenceImage)))
+                  case None => InternalServerError
+                }
+
+          }
+      }
+    }
+
+
+  }
+
+
+  def createReferenceImageVersion(projectId : Long, referenceImageId :Long, parent : Option[Long]) = Action.async(parse.multipartFormData)
+  {
+    implicit request => {
+      request.body.file("referenceImage") match {
+        case None => Future{BadRequest("no image")}
+        case Some(file) =>
+
+          val f :Files.TemporaryFile  = file.ref
+          request.body.asFormUrlEncoded.find(entry => entry._1 == "name").map(entry => entry._2.head) match
+          {
+            case None => Future{BadRequest("no name")}
+            case Some(name:String) =>
+
+              ReferenceImageVersionRepository.createReferenceImageVersion(referenceImageId,parent,f).map(
+                {
+                  case Some(t) => Ok (Json.prettyPrint(Json.toJson(t)))
+                  case None => InternalServerError
+                }
+              )
+          }
+      }
+    }
+  }
+
+
+  def getReferenceImageVersion(projectId: Long, referenceImageId :Long, referenceImageVersionId : Long) = Action.async
+  {
+    implicit request => {
+      ReferenceImageVersionRepository.getReferenceImageVersion(referenceImageVersionId).flatMap(
+        (maybeReferenceImageVersion : Option[ReferenceImageVersion]) => Future{
+          maybeReferenceImageVersion match
+          {
+            case Some(t) => Ok (Json.prettyPrint(Json.toJson(t)))
+            case None => NotFound
+          }
+        }
+      )
+    }
+  }
+
+  def createNewReferenceImageVersion(projectId : Long, referenceImageId :Long, parent : Long) = createReferenceImageVersion(projectId,referenceImageId,Some(parent))
+
+
+
 
 
 

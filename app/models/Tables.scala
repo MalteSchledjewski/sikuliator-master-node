@@ -427,18 +427,19 @@ trait Tables {
    *  @param referenceimageversionid Database column referenceimageversionid SqlType(bigserial), AutoInc, PrimaryKey
    *  @param url Database column url SqlType(text)
    *  @param referenceimage Database column referenceimage SqlType(int8)
-   *  @param timecreated Database column timecreated SqlType(timestamptz) */
-  case class ReferenceimageversionsRow(referenceimageversionid: Long, url: String, referenceimage: Long, timecreated: java.sql.Timestamp)
+   *  @param timecreated Database column timecreated SqlType(timestamptz)
+   *  @param parent Database column parent SqlType(int8), Default(None) */
+  case class ReferenceimageversionsRow(referenceimageversionid: Long, url: String, referenceimage: Long, timecreated: java.sql.Timestamp, parent: Option[Long] = None)
   /** GetResult implicit for fetching ReferenceimageversionsRow objects using plain SQL queries */
-  implicit def GetResultReferenceimageversionsRow(implicit e0: GR[Long], e1: GR[String], e2: GR[java.sql.Timestamp]): GR[ReferenceimageversionsRow] = GR{
+  implicit def GetResultReferenceimageversionsRow(implicit e0: GR[Long], e1: GR[String], e2: GR[java.sql.Timestamp], e3: GR[Option[Long]]): GR[ReferenceimageversionsRow] = GR{
     prs => import prs._
-    ReferenceimageversionsRow.tupled((<<[Long], <<[String], <<[Long], <<[java.sql.Timestamp]))
+    ReferenceimageversionsRow.tupled((<<[Long], <<[String], <<[Long], <<[java.sql.Timestamp], <<?[Long]))
   }
   /** Table description of table referenceimageversions. Objects of this class serve as prototypes for rows in queries. */
   class Referenceimageversions(_tableTag: Tag) extends Table[ReferenceimageversionsRow](_tableTag, "referenceimageversions") {
-    def * = (referenceimageversionid, url, referenceimage, timecreated) <> (ReferenceimageversionsRow.tupled, ReferenceimageversionsRow.unapply)
+    def * = (referenceimageversionid, url, referenceimage, timecreated, parent) <> (ReferenceimageversionsRow.tupled, ReferenceimageversionsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(referenceimageversionid), Rep.Some(url), Rep.Some(referenceimage), Rep.Some(timecreated)).shaped.<>({r=>import r._; _1.map(_=> ReferenceimageversionsRow.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(referenceimageversionid), Rep.Some(url), Rep.Some(referenceimage), Rep.Some(timecreated), parent).shaped.<>({r=>import r._; _1.map(_=> ReferenceimageversionsRow.tupled((_1.get, _2.get, _3.get, _4.get, _5)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column referenceimageversionid SqlType(bigserial), AutoInc, PrimaryKey */
     val referenceimageversionid: Rep[Long] = column[Long]("referenceimageversionid", O.AutoInc, O.PrimaryKey)
@@ -448,9 +449,13 @@ trait Tables {
     val referenceimage: Rep[Long] = column[Long]("referenceimage")
     /** Database column timecreated SqlType(timestamptz) */
     val timecreated: Rep[java.sql.Timestamp] = column[java.sql.Timestamp]("timecreated")
+    /** Database column parent SqlType(int8), Default(None) */
+    val parent: Rep[Option[Long]] = column[Option[Long]]("parent", O.Default(None))
 
     /** Foreign key referencing Referenceimages (database name referenceimageversions___fkreferenceimage) */
     lazy val referenceimagesFk = foreignKey("referenceimageversions___fkreferenceimage", referenceimage, Referenceimages)(r => r.referenceimageid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Referenceimageversions (database name referenceimageversions_referenceimageversions_referenceimagever) */
+    lazy val referenceimageversionsFk = foreignKey("referenceimageversions_referenceimageversions_referenceimagever", parent, Referenceimageversions)(r => Rep.Some(r.referenceimageversionid), onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
 
     /** Uniqueness Index over (url) (database name ReferenceImageVersions_URL_uindex) */
     val index1 = index("ReferenceImageVersions_URL_uindex", url, unique=true)
