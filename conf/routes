@@ -10,7 +10,7 @@ GET         /projects/:projectId                                                
 GET         /projects/:projectId/Flavours                                        controllers.Application.listFlavours(projectId: Long)
 # Add the tree and the version management to it:
 POST        /projects/:projectId/Flavours                                        controllers.Application.createFlavour(projectId: Long,name :String )
-#GET     /projects/:projectId/Flavours/:flavourId
+GET     /projects/:projectId/Flavours/:flavourId                                 controllers.Application.getFlavour(projectId: Long, flavourId :Long)
 #GET     /projects/:projectId/Flavours/:flavourId/executions
 #GET     /projects/:projectId/Flavours/:flavourId/executions/:runId/:testId/:testVersionId
 

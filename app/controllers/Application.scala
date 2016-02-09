@@ -1,14 +1,18 @@
 package controllers
 
+import com.fasterxml.jackson.annotation.JsonValue
 import models._
 import play.api._
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfig}
 import play.api.libs.Files
-import play.api.libs.json.{JsArray, _}
+import play.api.libs.json._
 import play.api.mvc.{Action, Controller, Result}
 import slick.driver.JdbcProfile
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
+import scala.util.Try
+import scala.util.Success
+import scala.util.Failure
 
 
 class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
@@ -55,6 +59,7 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
   }
 
 
+//-------------------------
 
   def listFlavours(projectId : Long) = Action.async
   {
@@ -90,6 +95,99 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
     }
   }
 
+
+  def getFlavour(projectId : Long, flavourId : Long) = Action.async
+  {
+    implicit request => {
+      FlavourRepository.getCreateFlavourTestTree(flavourId).flatMap(
+        (test : Try[JsValue]) => {
+          test match
+          {
+            case Success(testTree) =>
+              TestVersionRepository.getTestVersionsForFlavour(flavourId).flatMap[Result](
+                {
+                  case None =>
+                    {
+                    Logger.info("no test versions")
+                    Future{NotFound}
+                    }
+                  case Some(testIdToTestVersion) =>
+                    ReferenceImageVersionRepository.getReferenceImageVersionsForFlavour(flavourId).flatMap[Result](
+                      {
+                        case None =>
+                          {
+                            Logger.info("no reference image versions")
+                            Future{NotFound}
+                          }
+                        case Some(referenceImageIdToVersion) =>
+                          SequenceVersionRepository.getSequenceVersionsForFlavour(flavourId).flatMap(
+                            {
+                              case None => Future{NotFound}
+                              case Some(sequenceIdToVersion) =>
+                                FlavourRepository.getFlavourName(flavourId).flatMap(
+                                  {
+                                    case None => Future{NotFound}
+                                    case Some(name: String) =>
+                                    {
+                                      val testVersions = JsonHelper.concatAsJsonArray(
+                                        testIdToTestVersion.map(
+                                          (entry) => Json.obj(
+                                            "testId" -> JsNumber(entry._1),
+                                            "testVersion" -> entry._2
+                                          )
+                                        )
+                                      )
+
+                                      val referenceImageVersions = JsonHelper.concatAsJsonArray(
+                                        referenceImageIdToVersion.map(
+                                          (entry) => Json.obj(
+                                            "referenceImageId" -> JsNumber(entry._1),
+                                            "referenceImageVersion" -> entry._2
+                                          )
+                                        )
+                                      )
+
+
+                                      val sequenceVersion = JsonHelper.concatAsJsonArray(
+                                        sequenceIdToVersion.map(
+                                          (entry) => Json.obj(
+                                            "sequenceId" -> JsNumber(entry._1),
+                                            "sequenceVersion" -> entry._2
+                                          )
+                                        )
+                                      )
+
+                                      val result = Json.obj(
+                                        "ID" -> flavourId,
+                                        "name" -> name,
+                                        "tests" -> testTree,
+                                        "referenceImageVersions" -> referenceImageVersions,
+                                        "sequenceVersions" -> sequenceVersion,
+                                        "testVersions" -> testVersions
+                                      )
+                                      Future{Ok(Json.prettyPrint(result))}
+                                    }
+                                  }
+                                )
+                            }
+                          )
+                      }
+                    )
+                }
+              )
+            case Failure(e) =>
+              {
+                Logger.info("Test tree did not work")
+                Future{NotFound}
+              }
+          }
+        }
+      )
+    }
+  }
+
+
+//-------------------------
 
   def listTests(projectId : Long) = Action.async
   {
@@ -152,6 +250,7 @@ class Application extends Controller with HasDatabaseConfig[JdbcProfile]{
   }
 
 
+//-------------------------
   def createTestVersion(projectId : Long, testId :Long, parent : Option[Long], spec : String) = Action.async
   {
     implicit request => {

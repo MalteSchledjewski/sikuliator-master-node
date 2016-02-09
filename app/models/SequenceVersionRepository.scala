@@ -46,6 +46,22 @@ object SequenceVersionRepository  extends HasDatabaseConfig[JdbcProfile]{
     )
   }
 
+
+
+  def getSequenceVersionsForFlavour(flavourId : Long): Future[Option[Seq[(Long,SequenceVersion)]]] =
+  {
+    val eventualRows = dbConfig.db.run(Tables.Flavourtosequence.join(Tables.Sequences).on(_.sequenceid === _.sequenceid).join(Tables.Sequenceversions).on(_._1.sequenceversionid === _.sequenceversionid).filter(_._1._1.flavourid === flavourId).result.asTry)
+    eventualRows.map[Option[Seq[(Long,SequenceVersion)]]](
+      {
+        case Success(rows) =>
+          Some(rows.toList.map((row) => (row._1._2.sequenceid,SequenceVersion(row._2.sequenceversionid,row._1._2.sequenceid, row._2.specification, row._2.timecreated,row._2.parent))))
+        case Failure(e) =>
+          None
+      }
+    )
+  }
+
+
   def createSequenceVersion(sequenceId :Long, parent : Option[Long], spec : String) : Future[Option[Long]] =
   {
     val insertAction = (Tables.Sequenceversions.map(
@@ -61,6 +77,8 @@ object SequenceVersionRepository  extends HasDatabaseConfig[JdbcProfile]{
       }
     )
   }
+
+
 
 
 }

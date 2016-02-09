@@ -46,4 +46,4 @@ routesGenerator := InjectedRoutesGenerator
 //  Seq(file(fname))
 //}
 
-fork in run := true
+//fork in run := true

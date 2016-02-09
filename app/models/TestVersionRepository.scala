@@ -48,6 +48,22 @@ object TestVersionRepository  extends HasDatabaseConfig[JdbcProfile]{
     )
   }
 
+
+  def getTestVersionsForFlavour(flavourId : Long): Future[Option[Seq[(Long,TestVersion)]]] =
+  {
+    val eventualJoinRows = dbConfig.db.run(Tables.Flavourtotestversion.join(Tables.Tests).on(_.testid === _.testid).join(Tables.Testversions).on(_._1.testversionid === _.testversionid).filter(_._1._1.flavourid === flavourId).result.asTry)
+    eventualJoinRows.map[Option[Seq[(Long,TestVersion)]]](
+      {
+        case Success(rows) =>
+          Some(rows.toList.map((row) => (row._1._2.testid ,TestVersion(row._2.testversionid,row._1._2.testid, row._2.specification, row._2.timecreated,row._2.parent))))
+        case Failure(e) =>
+          None
+      }
+    )
+  }
+
+
+
   def createTestVersion(testId :Long, parent : Option[Long], spec : String) : Future[Option[Long]] =
   {
     val insertAction = (Tables.Testversions.map(

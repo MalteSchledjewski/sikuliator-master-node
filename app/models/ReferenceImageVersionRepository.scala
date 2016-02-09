@@ -34,6 +34,19 @@ object ReferenceImageVersionRepository extends HasDatabaseConfig[JdbcProfile]{
     )
   }
 
+  def getReferenceImageVersionsForFlavour(flavourId : Long): Future[Option[Seq[(Long,ReferenceImageVersion)]]] =
+  {
+    val eventualJoinRows = dbConfig.db.run(Tables.Flavourtoreferenceimageversion.join(Tables.Referenceimages).on(_.referenceimageid === _.referenceimageid).join(Tables.Referenceimageversions).on(_._1.referenceimageversionid === _.referenceimageversionid).filter(_._1._1.flavourid === flavourId).result.asTry)
+    eventualJoinRows.map[Option[Seq[(Long,ReferenceImageVersion)]]](
+      {
+        case Success(rows) =>
+          Some(rows.toList.map((row) => (row._1._2.referenceimageid,ReferenceImageVersion(row._2.referenceimageversionid, row._2.url, row._2.timecreated,row._2.parent))))
+        case Failure(e) =>
+          None
+      }
+    )
+  }
+
 
   def getReferenceImageVersion(referenceImageVersionId : Long): Future[Option[ReferenceImageVersion]] =
   {
