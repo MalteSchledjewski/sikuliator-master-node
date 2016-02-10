@@ -1237,6 +1237,8 @@ definitions:
     - $ref: "#/definitions/TreeNode"
     - type: object
       properties:
+        name:
+          type: string
         entries:
           type: array
           items:
@@ -1258,7 +1260,7 @@ definitions:
         sequenceVersions:
           type: array
           items:
-            $ref: "#/definitions/SequenceVersionStub"
+            $ref: "#/definitions/models.SequenceVersionStub"
 
   # JobStub:
     # required:
@@ -1378,7 +1380,7 @@ definitions:
           items:
             type: string
 
-  SequenceVersionStub:
+  models.SequenceVersionStub:
     description:
       "A sequence version is identified by its id.
       It contains the encoded sequence."
@@ -1398,7 +1400,7 @@ definitions:
   SequenceVersion:
     type: object
     allOf:
-    - $ref: "#/definitions/SequenceVersionStub"
+    - $ref: "#/definitions/models.SequenceVersionStub"
     - type: object
       properties:
         spec:

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/Sikuliator" xmlns:tns="http://www.example.org/Sikuliator" elementFormDefault="qualified" xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" vc:minVersion="1.1">
+
+    <element name="sequence" type="tns:Sequence"></element>
+
+    <complexType name="Sequence">
+    	<choice minOccurs="1" maxOccurs="unbounded">
+    		<element name="click" type="tns:Click"></element>
+    		<element name="doubleClick" type="tns:Click"></element>
+    		<element name="enterText" type="tns:EnterText"></element>
+    		<element name="waitForSomethingToBeThere" type="tns:WaitForSomeImage"></element>
+    		<element name="waitForSomethingToNotBeThere" type="tns:WaitForSomeImage"></element>
+    		<element name="runSequence" type="tns:RunSequence"></element>
+    		<element name="rightClick" type="tns:Click"></element>
+    		<element name="pasteText" type="tns:EnterText"></element>
+    	</choice>
+    	<attribute name="name" type="string"></attribute>
+    </complexType>
+
+    <complexType name="Click">
+    	<simpleContent>
+    		<extension base="tns:ImageMatching">
+    			<attribute name="towardsTop" type="int"></attribute>
+    			<attribute name="towardsRight" type="int"></attribute>
+    		</extension>
+    	</simpleContent>
+    </complexType>
+
+
+    <complexType name="WaitForSomeImage">
+    	<simpleContent>
+    		<extension base="tns:ImageMatching">
+    			<attribute name="secondsToWait">
+    				<simpleType>
+    					<restriction base="int">
+    						<minInclusive value="1"></minInclusive>
+    					</restriction>
+    				</simpleType>
+    			</attribute>
+    		</extension>
+    	</simpleContent>
+    </complexType>
+
+
+    <complexType name="EnterText">
+    	<choice minOccurs="1" maxOccurs="1">
+    		<element name="useInput" type="tns:UseInput"></element>
+    		<element name="text" type="string"></element>
+    	</choice>
+    </complexType>
+
+
+
+
+    <element name="test" type="tns:Sequence"></element>
+
+    <complexType name="Test">
+    	<complexContent>
+    		<extension base="tns:Sequence"></extension>
+    	</complexContent>
+    </complexType>
+
+
+
+    <complexType name="UseInput"></complexType>
+
+    <complexType name="RunSequence">
+    	<sequence>
+    		<element name="input" type="string"></element>
+    	</sequence>
+    	<attribute name="sequenceName" type="string"></attribute>
+    </complexType>
+
+    <complexType name="ImageMatching">
+    	<simpleContent>
+    		<extension base="string">
+    			<attribute name="similarity" type="double" use="required"></attribute>
+    		</extension>
+    	</simpleContent>
+    </complexType>
+</schema>

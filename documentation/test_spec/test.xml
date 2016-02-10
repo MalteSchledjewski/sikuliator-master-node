@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sequence name="OpenVMC"  xmlns="http://www.example.org/Sikuliator">
+<runSequence sequenceName="test name">
+	<input>fileName</input>
+</runSequence>
+<click similarity="0.6">VMC.Workbench.MapViewer</click>
+<doubleClick similarity="0.6" towardsRight="2" towardsTop="1">VMC.MapViewer.map</doubleClick>
+<click similarity="0.6">VMC.MapViewer.startEouting</click>
+<rightClick similarity="0.6">VMC.MapViewer.map</rightClick>
+<enterText>
+	<text>Hallo</text>
+</enterText>
+<enterText>
+	<useInput />
+</enterText>
+<pasteText>
+	<text>Something from the clipboard</text>
+</pasteText>
+<waitForSomethingToNotBeThere similarity="0.6" secondsToWait="1">VMC.waitbar</waitForSomethingToNotBeThere>
+<waitForSomethingToBeThere similarity="0.6">VMC.RouteViewer.RouteViewerWindow</waitForSomethingToBeThere>
+</sequence>
+
+
+
+
