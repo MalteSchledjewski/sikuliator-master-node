@@ -1,0 +1,47 @@
+[debug] Debug.init: from sikuli.Debug: on: 3
+[debug] RunTimeINIT: loadOptions: check: D:\sikuliator\sikuliator-client
+[debug] RunTimeINIT: loadOptions: check: C:\Users\Malte
+[debug] RunTimeINIT: loadOptions: check: C:\Users\Malte\AppData\Roaming\Sikulix\SikulixStore
+[debug] RunTimeINIT: global init: entering as: API
+[debug] RunTimeINIT: ScreenDevice 0 has (0,0) --- will be primary Screen(0)
+[debug] RunTimeINIT: Monitor 0: (0, 0) 1440 x 900
+[debug] RunTimeINIT: runs as sikulixapi-1.1.0.jar in: D:\sikuliator\sikuliator-client\lib
+[debug] RunTimeINIT: exists libs folder at: C:\Users\Malte\AppData\Roaming\Sikulix\SikulixLibs_201510081336
+[debug] RunTimeINIT: addToWindowsSystemPath: added to systempath:
+C:\Users\Malte\AppData\Roaming\Sikulix\SikulixLibs_201510081336
+[debug] RunTimeINIT: checkJavaUsrPath: added to ClassLoader.usrPaths
+***** show environment for API (build 201510081336)
+user.home: C:\Users\Malte
+user.dir (work dir): D:\sikuliator\sikuliator-client
+user.name: Malte
+java.io.tmpdir: C:\Users\Malte\AppData\Local\Temp
+running 64Bit on Windows (6.3) from a jar
+java 8-64 version 1.8.0_05-b13 vm 25.5-b02 class 52.0 arch amd64
+app data folder: C:\Users\Malte\AppData\Roaming\Sikulix
+libs folder: C:\Users\Malte\AppData\Roaming\Sikulix\SikulixLibs_201510081336
+executing jar: D:\sikuliator\sikuliator-client\lib\sikulixapi-1.1.0.jar
+*** classpath dump sikulix
+*** classpath dump end
+***** show environment end
+[debug] RunTimeAPI: global init: leaving
+[debug] RunTimeAPI: initAPI: entering
+[debug] RunTimeAPI: initAPI: leaving
+[debug] RunTimeAPI: loadLib: VisionProxy.dll
+[debug] KeyBoard: init
+[debug] Mouse: init
+[debug] Image: loaded: C:/Users/Malte/AppData/Local/Temp/ref_2632909261591298019.png (file:/C:/Users/Malte/AppData/Local/Temp/ref_2632909261591298019.png)
+[debug] Image: cached: C:/Users/Malte/AppData/Local/Temp/ref_2632909261591298019.png (3 KB) (# 1 KB 3 -- 0 % of 64 MB)
+[debug] CLICK on L(24,879)@S(0)[0,0 1440x900]
+[debug]  TYPE "Editor"
+[debug] Region:  TYPE "Editor"
+[debug] Image: loaded: C:/Users/Malte/AppData/Local/Temp/ref_470909140471108159.png (file:/C:/Users/Malte/AppData/Local/Temp/ref_470909140471108159.png)
+[debug] Image: cached: C:/Users/Malte/AppData/Local/Temp/ref_470909140471108159.png (22 KB) (# 2 KB 25 -- 0 % of 64 MB)
+[debug] CLICK on L(122,341)@S(0)[0,0 1440x900]
+[debug] Image: loaded: C:/Users/Malte/AppData/Local/Temp/ref_7456831329506437112.png (file:/C:/Users/Malte/AppData/Local/Temp/ref_7456831329506437112.png)
+[debug] Image: cached: C:/Users/Malte/AppData/Local/Temp/ref_7456831329506437112.png (85 KB) (# 3 KB 110 -- 0 % of 64 MB)
+[debug] Region: find: waiting 3,0 secs for C:\Users\Malte\AppData\Local\Temp\Sikulix_37341851\sikuliximage-1455120315979.png to appear in S(0)[0,0 1440x900]
+[debug] Image: loaded: C:/Users/Malte/AppData/Local/Temp/Sikulix_37341851/sikuliximage-1455120315979.png (file:/C:/Users/Malte/AppData/Local/Temp/Sikulix_37341851/sikuliximage-1455120315979.png)
+[debug] Image: cached: C:/Users/Malte/AppData/Local/Temp/Sikulix_37341851/sikuliximage-1455120315979.png (3796 KB) (# 4 KB 3907 -- 5 % of 64 MB)
+[debug] Region: find: C:\Users\Malte\AppData\Local\Temp\Sikulix_37341851\sikuliximage-1455120315979.png has appeared 
+at M[0,0 1440x900]@S(S(0)[0,0 1440x900]) S:1,00 C:720,450 [657 msec]
+[debug] highlight M[0,0 1440x900]@S(S(0)[0,0 1440x900]) S:1,00 C:720,450 [657 msec] for 2.0 secs

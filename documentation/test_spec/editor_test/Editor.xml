@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<spec:test name="OpenEditor"  xmlns:spec="http://www.example.org/Sikuliator">
+<spec:click similarity="0.95">WindowsStartButton</spec:click>
+<spec:enterText>
+	<spec:text>Editor</spec:text>
+</spec:enterText>
+<spec:click similarity="0.95">EditorButton</spec:click>
+<spec:waitForSomethingToBeThere similarity="0.95" secondsToWait="10">EditorTop</spec:waitForSomethingToBeThere>
+</spec:test>

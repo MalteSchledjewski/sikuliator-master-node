@@ -1,0 +1,5 @@
+clicked on WindowsStartButton
+entering text: Editor
+clicked on EditorButton
+found EditorTop
+finished successfully
